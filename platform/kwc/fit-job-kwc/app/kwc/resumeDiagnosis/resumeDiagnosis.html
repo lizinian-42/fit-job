@@ -1,0 +1,192 @@
+<template>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">FJ</span>
+        <div>
+          <strong>Fit Job</strong>
+          <small>AI 就业实习云平台</small>
+        </div>
+      </div>
+      <div class="user">
+        <span class="avatar">林</span>
+        <div>
+          <strong>林知夏</strong>
+          <small>软件工程 · 2027 届</small>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-heading">
+        <div>
+          <button class="back-button" onclick={backToWorkbench}>← 返回学生工作台</button>
+          <h1>AI 简历诊断</h1>
+          <p>从岗位适配、关键词覆盖、成果表达与结构完整度四个维度，识别优势、缺口和可直接采用的修改建议。</p>
+        </div>
+        <div class="meta-line">
+          <span>最近生成：{diagnosedAt}</span>
+          <span class="badge">Mock 结果</span>
+        </div>
+      </div>
+
+      <section class="surface controls">
+        <div class="control-grid">
+          <div class="field">
+            <label for="resume-version">选择简历</label>
+            <div class="select-wrap">
+              <select id="resume-version" onchange={handleResumeChange}>
+                <option>前端开发简历 V3</option>
+                <option>AI 产品简历 V2</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="target-job">目标岗位</label>
+            <div class="select-wrap">
+              <select id="target-job" onchange={handleJobChange}>
+                <option>前端开发实习生 · 云途科技</option>
+                <option>AI 产品实习生 · 星环智能</option>
+                <option>数据可视化实习生 · 数澜科技</option>
+              </select>
+            </div>
+          </div>
+          <button class={diagnosisButtonClass} onclick={runDiagnosis}>{diagnosisButtonText}</button>
+        </div>
+        <div class="file-row">
+          <div class="file-info">
+            <strong>{selectedResumeText}</strong>
+            <small>支持 PDF / DOCX，演示模式仅展示文件名</small>
+          </div>
+          <label class="upload-button" for="resume-upload">
+            上传新简历
+            <input id="resume-upload" type="file" accept=".pdf,.doc,.docx" onchange={handleUpload} />
+          </label>
+        </div>
+      </section>
+
+      <div class={noticeClass} role="status">
+        <span>{notice}</span>
+        <button onclick={closeNotice}>关闭</button>
+      </div>
+
+      <div class={reportClass}>
+        <div class="report-grid">
+          <section class="surface score-card">
+            <div class="score-hero">
+              <p>综合诊断得分</p>
+              <h2>岗位适配表现良好</h2>
+              <p class="score-target">目标岗位：{selectedJob}</p>
+              <div class="score-layout">
+                <div class="score-ring"><div><strong>86</strong><span>总分</span></div></div>
+                <div>
+                  <p class="score-summary">技术栈与岗位要求匹配，结构完整度突出。补齐工程质量关键词和项目量化结果后，预计可提升至 92 分。</p>
+                  <span class="score-source">基于 1 份简历与 1 个目标岗位 Mock JD</span>
+                </div>
+              </div>
+            </div>
+            <div class="dimensions">
+              <h3>分项得分</h3>
+              <div class="dimension-list">
+                <div><div class="dimension-label"><span>岗位适配</span><strong>88</strong></div><div class="bar bar--88"><span></span></div></div>
+                <div><div class="dimension-label"><span>关键词覆盖</span><strong>76</strong></div><div class="bar bar--76"><span></span></div></div>
+                <div><div class="dimension-label"><span>成果表达</span><strong>82</strong></div><div class="bar bar--82"><span></span></div></div>
+                <div><div class="dimension-label"><span>结构完整</span><strong>94</strong></div><div class="bar bar--94"><span></span></div></div>
+              </div>
+            </div>
+          </section>
+
+          <div class="analysis-grid">
+            <section class="surface result-card">
+              <div class="result-title">
+                <span class="result-icon result-icon--success">✓</span>
+                <div><p>优势识别</p><h2>你已经做得不错</h2></div>
+              </div>
+              <div class="result-list">
+                <div class="list-item list-item--success"><span class="list-mark">✓</span><span>技术栈与目标岗位核心要求高度匹配，React 与 TypeScript 经历清晰。</span></div>
+                <div class="list-item list-item--success"><span class="list-mark">✓</span><span>项目经历结构完整，能体现从需求拆解到交付的完整过程。</span></div>
+                <div class="list-item list-item--success"><span class="list-mark">✓</span><span>教育背景、获奖与社团经历信息精炼，阅读负担较低。</span></div>
+              </div>
+            </section>
+
+            <section class="surface result-card">
+              <div class="result-title">
+                <span class="result-icon result-icon--warning">!</span>
+                <div><p>不足识别</p><h2>优先补齐这些信息</h2></div>
+              </div>
+              <div class="result-list">
+                <div class="list-item list-item--warning"><span class="list-mark">1</span><span>缺少性能优化和工程质量相关的量化结果。</span></div>
+                <div class="list-item list-item--warning"><span class="list-mark">2</span><span>数据可视化经历没有说明图表规模与业务价值。</span></div>
+                <div class="list-item list-item--warning"><span class="list-mark">3</span><span>实习可到岗时间与每周出勤天数尚未明确。</span></div>
+              </div>
+            </section>
+
+            <section class="surface keywords">
+              <h2>关键词缺口</h2>
+              <p>目标岗位高频但简历覆盖不足，颜色表示补齐优先级。</p>
+              <div class="keyword-list">
+                <span class="keyword keyword--high">性能优化</span>
+                <span class="keyword keyword--medium">前端监控</span>
+                <span class="keyword keyword--high">单元测试</span>
+                <span class="keyword keyword--medium">CI/CD</span>
+                <span class="keyword keyword--low">微前端</span>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <section class="surface suggestions">
+          <div class="suggestions-heading">
+            <div>
+              <h2>可直接采用的优化建议</h2>
+              <p>接受或忽略建议，演示后续写回简历版本的交互状态。</p>
+            </div>
+            <span class="accepted-count">{acceptedCountText}</span>
+          </div>
+          <div class="suggestion-list">
+            <article class={suggestionOneClass}>
+              <div class="suggestion-head">
+                <span class="suggestion-index">01</span>
+                <div class="suggestion-copy"><h3>量化项目成果</h3><p>加入性能指标和业务规模，让成果更可验证。</p><span class="suggestion-state">{suggestionOneState}</span></div>
+                <div class="suggestion-actions"><button class="button-secondary" onclick={ignoreSuggestionOne}>忽略</button><button class="button-primary" onclick={acceptSuggestionOne}>接受</button></div>
+              </div>
+              <div class="comparison">
+                <div class="before"><strong>修改前</strong><span>负责课程管理平台前端页面开发。</span></div>
+                <div class="after"><strong>建议改为</strong><span>负责 12 个核心页面开发，将首屏加载时间降低 38%，支撑 2,000+ 学生使用。</span></div>
+              </div>
+            </article>
+
+            <article class={suggestionTwoClass}>
+              <div class="suggestion-head">
+                <span class="suggestion-index">02</span>
+                <div class="suggestion-copy"><h3>强化数据可视化经历</h3><p>补充数据规模、交互复杂度和决策价值。</p><span class="suggestion-state">{suggestionTwoState}</span></div>
+                <div class="suggestion-actions"><button class="button-secondary" onclick={ignoreSuggestionTwo}>忽略</button><button class="button-primary" onclick={acceptSuggestionTwo}>接受</button></div>
+              </div>
+              <div class="comparison">
+                <div class="before"><strong>修改前</strong><span>使用 ECharts 完成数据图表展示。</span></div>
+                <div class="after"><strong>建议改为</strong><span>基于 ECharts 搭建 8 类交互图表，呈现 5 万条就业数据并支持院系筛选。</span></div>
+              </div>
+            </article>
+
+            <article class={suggestionThreeClass}>
+              <div class="suggestion-head">
+                <span class="suggestion-index">03</span>
+                <div class="suggestion-copy"><h3>补齐工程化关键词</h3><p>将岗位高频关键词自然融入技能与项目描述。</p><span class="suggestion-state">{suggestionThreeState}</span></div>
+                <div class="suggestion-actions"><button class="button-secondary" onclick={ignoreSuggestionThree}>忽略</button><button class="button-primary" onclick={acceptSuggestionThree}>接受</button></div>
+              </div>
+              <div class="comparison">
+                <div class="before"><strong>修改前</strong><span>掌握 React、TypeScript、Vite。</span></div>
+                <div class="after"><strong>建议改为</strong><span>熟悉 React、TypeScript、Vite、Vitest、GitHub Actions 与前端性能监控。</span></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="draft-bar">
+            <div><strong>准备生成新的简历版本</strong><small>已接受的建议将进入版本草稿，不会覆盖原简历。</small></div>
+            <button class="button-primary" disabled={draftDisabled} onclick={generateDraft}>生成优化草稿</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</template>
