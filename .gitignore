@@ -1,0 +1,45 @@
+# JavaScript/KWC dependencies and build output
+node_modules/
+.vite/
+dist/
+dist-ssr/
+coverage/
+.tools/
+.npm-cache/
+
+# Obsolete local React prototype cache; official frontend source belongs in platform/kwc/
+web/
+
+# Java build output
+target/
+build/
+.gradle/
+*.class
+
+# Logs and local runtime files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.local
+
+# Environment and local platform files
+.env
+.env.*
+!.env.example
+platform/app-manifest.local.yaml
+
+# Editors and operating systems
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

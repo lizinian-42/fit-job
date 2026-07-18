@@ -1,0 +1,19 @@
+application:
+  name: "Fit Job"
+  number: "fit_job"
+  platformVersion: "<target-cangqiong-version>"
+  environment: "<development-environment-name>"
+
+models:
+  studentProfile: "fit_student_profile"
+  resume: "fit_resume"
+  job: "fit_job"
+  internshipApplication: "fit_internship_application"
+  internshipProcess: "fit_internship_process"
+  employmentDashboard: "fit_employment_dashboard"
+
+extensions:
+  kwcProject: "<official-generated-project-name>"
+  javaModule: "<official-generated-module-name>"
+
+# Do not add tenant secrets, tokens, passwords, or real personal data here.
