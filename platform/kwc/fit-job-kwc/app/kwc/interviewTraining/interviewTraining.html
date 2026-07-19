@@ -1,0 +1,130 @@
+<template>
+  <div class="page">
+    <header class="topbar">
+      <button class="brand" onclick={openHome}>
+        <span class="brand-mark">FJ</span>
+        <span><strong>Fit Job</strong><small>AI 就业实习云平台</small></span>
+      </button>
+      <nav class="topnav" aria-label="第一阶段演示导航">
+        <button class="nav-button" onclick={openHome}>首页</button>
+        <button class="nav-button" onclick={openStudentWorkbench}>学生工作台</button>
+        <button class="nav-button" onclick={openResumeDiagnosis}>简历诊断</button>
+        <button class="nav-button" onclick={openJobRecommendation}>岗位推荐</button>
+        <button class="nav-button nav-button--active" onclick={openInterviewTraining}>AI 面试</button>
+        <button class="nav-button" onclick={openPolicyQa}>政策问答</button>
+        <button class="nav-button" onclick={openEmploymentDashboard}>就业驾驶舱</button>
+      </nav>
+      <span class="student-badge">{studentName}</span>
+    </header>
+
+    <main class="content">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Interview Agent Contract</p>
+          <h1>AI 模拟面试训练</h1>
+          <p>按目标岗位完成三轮结构化问答，实时观察回答证据，再生成逻辑性、完整性、表达力和岗位相关性报告。</p>
+        </div>
+        <div class="hero-meta">
+          <span>目标岗位</span>
+          <strong>{targetRole}</strong>
+          <small>本轮进度 {progressText}</small>
+        </div>
+      </section>
+
+      <div class={noticeClass} role="status">
+        <span>{notice}</span>
+        <button onclick={closeNotice}>关闭</button>
+      </div>
+
+      <section class="type-panel surface">
+        <div class="section-heading">
+          <div><p class="eyebrow">Interview Type</p><h2>选择面试类型</h2></div>
+          <button class="link-button" onclick={resetSession}>重置本轮</button>
+        </div>
+        <div class="type-grid">
+          <button class={hrClass} onclick={selectHr}><strong>HR 面</strong><span>求职动机、协作与稳定性</span></button>
+          <button class={technicalClass} onclick={selectTechnical}><strong>技术/业务面</strong><span>项目真实性、工程能力与业务理解</span></button>
+          <button class={comprehensiveClass} onclick={selectComprehensive}><strong>综合素质面</strong><span>学习敏捷度、价值观与跨团队推进</span></button>
+        </div>
+        <p class="type-summary">当前模式：{typeDescription}</p>
+      </section>
+
+      <div class="training-grid">
+        <section class="surface question-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Round {questionNumber} / {questionCount}</p>
+              <h2>结构化问题</h2>
+            </div>
+            <span class="dimension-badge">{currentDimension}</span>
+          </div>
+          <article class="question-card">
+            <span class="question-index">Q{questionNumber}</span>
+            <div>
+              <strong>{currentQuestionText}</strong>
+              <p>观察重点：{currentQuestionFocus}</p>
+            </div>
+          </article>
+          <label class="answer-field" for="interview-answer">
+            <span>你的回答</span>
+            <textarea id="interview-answer" oninput={handleAnswerInput} placeholder="建议使用：一句结论 + STAR 过程 + 数字结果 + 岗位迁移价值">{currentAnswer}</textarea>
+          </label>
+          <div class="question-actions">
+            <button class="button-secondary" onclick={fillSampleAnswer}>填入示例答案</button>
+            <div>
+              <button class="button-secondary" disabled={previousDisabled} onclick={previousQuestion}>上一题</button>
+              <button class="button-primary" onclick={submitAnswer}>{submitButtonText}</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="surface score-panel">
+          <div class="section-heading">
+            <div><p class="eyebrow">Live Evidence</p><h2>实时评分占位</h2></div>
+            <strong class="live-score">{liveScore}</strong>
+          </div>
+          <div class={scoreBarClass}><span></span></div>
+          <div class="evidence-list">
+            <article><span>结构</span><strong>结论与行动是否清晰</strong></article>
+            <article><span>证据</span><strong>是否包含数字或验证方式</strong></article>
+            <article><span>匹配</span><strong>是否回扣目标岗位要求</strong></article>
+          </div>
+          <div class="hint-card">
+            <strong>回答建议</strong>
+            <p>先用一句话回答问题，再说明背景、个人行动和结果；不要编造没有发生过的经历。</p>
+          </div>
+        </aside>
+      </div>
+
+      <section class={reportClass}>
+        <div class="report-heading">
+          <div>
+            <p class="eyebrow">Interview Report</p>
+            <h2>结构化面试报告</h2>
+          </div>
+          <span>{reportStatus}</span>
+        </div>
+        <div class="report-summary">
+          <div class="report-score"><strong>{reportScore}</strong><span>综合分</span></div>
+          <div><strong>{reportLevel}</strong><p>报告结构可直接映射 InterviewReportDTO 与后续 Agent JSON 输出。</p></div>
+        </div>
+        <div class="dimension-grid">
+          <article><span>逻辑性</span><strong>{logicScore}</strong><p>结论先行，主线较清楚。</p></article>
+          <article><span>完整性</span><strong>{completenessScore}</strong><p>需要补充量化结果。</p></article>
+          <article><span>表达力</span><strong>{expressionScore}</strong><p>技术动作能转译为价值。</p></article>
+          <article><span>岗位相关性</span><strong>{roleFitScore}</strong><p>回答能回扣 JD 要求。</p></article>
+        </div>
+        <div class="suggestion-grid">
+          <article><strong>本轮改进建议</strong><p>补充项目规模与性能数字；每题结尾回扣 JD 关键词。</p></article>
+          <article><strong>下一轮训练计划</strong><p>准备一个失败复盘案例，并训练 60 秒自我介绍。</p></article>
+        </div>
+      </section>
+
+      <section class="demo-flow surface">
+        <button class="button-secondary" onclick={openJobRecommendation}>← 上一步：岗位推荐</button>
+        <div><span>演示第 5 / 7 步</span><strong>AI 面试 → 政策问答</strong></div>
+        <button class="button-primary" onclick={openPolicyQa}>下一步：政策问答 →</button>
+      </section>
+    </main>
+  </div>
+</template>

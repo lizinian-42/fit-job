@@ -1,0 +1,131 @@
+<template>
+  <div class="page">
+    <header class="topbar">
+      <button class="brand" onclick={openHome}>
+        <span class="brand-mark">FJ</span>
+        <span><strong>Fit Job</strong><small>AI 就业实习云平台</small></span>
+      </button>
+      <nav class="topnav" aria-label="第一阶段演示导航">
+        <button class="nav-button" onclick={openHome}>首页</button>
+        <button class="nav-button" onclick={openStudentWorkbench}>学生工作台</button>
+        <button class="nav-button" onclick={openResumeDiagnosis}>简历诊断</button>
+        <button class="nav-button" onclick={openJobRecommendation}>岗位推荐</button>
+        <button class="nav-button" onclick={openInterviewTraining}>AI 面试</button>
+        <button class="nav-button" onclick={openPolicyQa}>政策问答</button>
+        <button class="nav-button nav-button--active" onclick={openEmploymentDashboard}>就业驾驶舱</button>
+      </nav>
+      <span class="role-badge">院系管理员</span>
+    </header>
+
+    <main class="content">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Employment Intelligence</p>
+          <h1>{collegeName}就业数据驾驶舱</h1>
+          <p>从院系视角查看就业率、实习人数、未就业学生、风险信号和就业质量建议，为答辩演示提供完整管理端闭环。</p>
+        </div>
+        <div class="hero-actions">
+          <span>{graduationYear} 届 · 更新于 {generatedAt}</span>
+          <div>
+            <button class="button-secondary" onclick={refreshSnapshot}>刷新快照</button>
+            <button class="button-primary" onclick={exportSummary}>生成阶段摘要</button>
+          </div>
+        </div>
+      </section>
+
+      <div class={noticeClass} role="status">
+        <span>{notice}</span>
+        <button onclick={closeNotice}>关闭</button>
+      </div>
+
+      <section class="metric-grid" aria-label="就业核心指标">
+        <article class="metric-card metric-card--good"><span>就业率</span><strong>{employmentRate}</strong><small>{employmentDelta}</small></article>
+        <article class="metric-card metric-card--info"><span>实习中人数</span><strong>{internshipCount}</strong><small>{internshipDelta}</small></article>
+        <article class="metric-card metric-card--warning"><span>未就业人数</span><strong>{unemployedCount}</strong><small>{unemployedDelta}</small></article>
+        <article class="metric-card metric-card--danger"><span>风险学生数</span><strong>{riskStudentCount}</strong><small>{riskStudentDelta}</small></article>
+      </section>
+
+      <div class="dashboard-grid">
+        <section class="surface trend-panel">
+          <div class="section-heading">
+            <div><p class="eyebrow">Employment Trend</p><h2>就业率趋势</h2></div>
+            <span>2 月至 7 月</span>
+          </div>
+          <div class="trend-chart" aria-label="就业率从 58% 上升至 86.4%">
+            <div class="trend-columns">
+              <div><i class="trend-bar trend-bar--58"></i><strong>58%</strong><span>2 月</span></div>
+              <div><i class="trend-bar trend-bar--64"></i><strong>64%</strong><span>3 月</span></div>
+              <div><i class="trend-bar trend-bar--71"></i><strong>71%</strong><span>4 月</span></div>
+              <div><i class="trend-bar trend-bar--78"></i><strong>78%</strong><span>5 月</span></div>
+              <div><i class="trend-bar trend-bar--83"></i><strong>83%</strong><span>6 月</span></div>
+              <div><i class="trend-bar trend-bar--86"></i><strong>86.4%</strong><span>7 月</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="surface industry-panel">
+          <div class="section-heading">
+            <div><p class="eyebrow">Industry Mix</p><h2>行业去向</h2></div>
+            <span>已就业学生</span>
+          </div>
+          <div class="distribution-list">
+            <div><span>互联网 / 软件</span><strong>38%</strong><i><b class="bar-width--38"></b></i></div>
+            <div><span>智能制造</span><strong>21%</strong><i><b class="bar-width--21"></b></i></div>
+            <div><span>数字政务</span><strong>15%</strong><i><b class="bar-width--15"></b></i></div>
+            <div><span>金融科技</span><strong>12%</strong><i><b class="bar-width--12"></b></i></div>
+            <div><span>其他</span><strong>14%</strong><i><b class="bar-width--14"></b></i></div>
+          </div>
+        </section>
+
+        <section class="surface salary-panel">
+          <div class="section-heading">
+            <div><p class="eyebrow">Salary Range</p><h2>月薪区间</h2></div>
+            <span>单位：学生人数</span>
+          </div>
+          <div class="salary-chart">
+            <div><i class="salary-bar salary-bar--18"></i><strong>18</strong><span>3k 以下</span></div>
+            <div><i class="salary-bar salary-bar--72"></i><strong>72</strong><span>3-5k</span></div>
+            <div><i class="salary-bar salary-bar--146"></i><strong>146</strong><span>5-8k</span></div>
+            <div><i class="salary-bar salary-bar--96"></i><strong>96</strong><span>8-12k</span></div>
+            <div><i class="salary-bar salary-bar--34"></i><strong>34</strong><span>12k 以上</span></div>
+          </div>
+        </section>
+
+        <section class="surface risk-panel">
+          <div class="section-heading">
+            <div><p class="eyebrow">Risk Queue</p><h2>风险学生跟进</h2></div>
+            <span>全部使用匿名 Mock 编号</span>
+          </div>
+          <div class="risk-list">
+            <article><span class="risk-level risk-level--high">高</span><div><strong>{firstRiskStudent}</strong><small>14 天未更新简历，近 30 天投递 0 次</small></div><b>辅导员</b></article>
+            <article><span class="risk-level">中</span><div><strong>{secondRiskStudent}</strong><small>收到 5 次面试邀约，暂无通过记录</small></div><b>就业导师</b></article>
+            <article><span class="risk-level">中</span><div><strong>{thirdRiskStudent}</strong><small>投递方向跨度过大，匹配均分偏低</small></div><b>辅导员</b></article>
+          </div>
+        </section>
+
+        <aside class="surface ai-panel">
+          <div class="section-heading">
+            <div><p class="eyebrow">AI Quality Report</p><h2>就业质量洞察</h2></div>
+            <span>Mock Agent 输出</span>
+          </div>
+          <div class="ai-summary">
+            <strong>本月就业质量稳步提升</strong>
+            <p>就业率连续增长，但低完成度简历仍是未就业群体的共同风险。</p>
+          </div>
+          <div class="highlight-list">
+            <p><span>01</span>{firstHighlight}</p>
+            <p><span>02</span>{secondHighlight}</p>
+            <p><span>03</span>{thirdHighlight}</p>
+          </div>
+          <button class="button-primary full-button" onclick={exportSummary}>生成 AI 阶段汇报</button>
+        </aside>
+      </div>
+
+      <section class="demo-flow surface">
+        <button class="button-secondary" onclick={openPolicyQa}>← 上一步：政策问答</button>
+        <div><span>演示第 7 / 7 步</span><strong>就业驾驶舱 · 演示完成</strong></div>
+        <button class="button-primary" onclick={openHome}>返回首页 ↻</button>
+      </section>
+    </main>
+  </div>
+</template>

@@ -1,51 +1,97 @@
 import '@kdcloudjs/kwc-synthetic-shadow';
 import { createElement } from '@kdcloudjs/kwc';
 import { setBasePath } from '@kdcloudjs/shoelace/dist/utilities/base-path.js';
+import fitJobDemoHome from './fitJobDemoHome/fitJobDemoHome.js';
 import studentWorkbench from './studentWorkbench/studentWorkbench.js';
 import resumeDiagnosis from './resumeDiagnosis/resumeDiagnosis.js';
 import jobRecommendation from './jobRecommendation/jobRecommendation.js';
+import interviewTraining from './interviewTraining/interviewTraining.js';
 import policyQa from './policyQa/policyQa.js';
+import employmentDashboard from './employmentDashboard/employmentDashboard.js';
+import { demoRoutes, getDemoRoute } from './demoData.js';
 
 setBasePath('/');
+window.__FIT_JOB_STANDALONE__ = true;
 
 let currentElement;
 
-function mountPage(page) {
+const pageConfigs = {
+    home: {
+        tagName: 'kwc-fit-job-demo-home',
+        component: fitJobDemoHome
+    },
+    student: {
+        tagName: 'kwc-student-workbench',
+        component: studentWorkbench
+    },
+    resume: {
+        tagName: 'kwc-resume-diagnosis',
+        component: resumeDiagnosis
+    },
+    jobs: {
+        tagName: 'kwc-job-recommendation',
+        component: jobRecommendation
+    },
+    interview: {
+        tagName: 'kwc-interview-training',
+        component: interviewTraining
+    },
+    policy: {
+        tagName: 'kwc-policy-qa',
+        component: policyQa
+    },
+    dashboard: {
+        tagName: 'kwc-employment-dashboard',
+        component: employmentDashboard
+    }
+};
+
+function normalizeRouteKey() {
+    const hashPath = window.location.hash.replace(/^#/, '') || '';
+    const legacyPage = new URLSearchParams(window.location.search).get('page');
+    const route = demoRoutes.find((item) => item.path === hashPath)
+        || demoRoutes.find((item) => item.key === legacyPage)
+        || demoRoutes[0];
+
+    return route.key;
+}
+
+function routeHash(routeKey) {
+    return `#${getDemoRoute(routeKey).path}`;
+}
+
+function mountPage(routeKey) {
     currentElement?.remove();
 
-    const pageConfig = getPageConfig(page);
+    const route = getDemoRoute(routeKey);
+    const pageConfig = pageConfigs[route.key] || pageConfigs.home;
     currentElement = createElement(
         pageConfig.tagName,
         { is: pageConfig.component }
     );
     document.body.appendChild(currentElement);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function getPageConfig(page) {
-    const configs = {
-        resume: {
-            tagName: 'kwc-resume-diagnosis',
-            component: resumeDiagnosis
-        },
-        jobs: {
-            tagName: 'kwc-job-recommendation',
-            component: jobRecommendation
-        },
-        policy: {
-            tagName: 'kwc-policy-qa',
-            component: policyQa
-        }
-    };
-
-    return configs[page] || {
-        tagName: 'kwc-student-workbench',
-        component: studentWorkbench
-    };
+    document.title = `${route.label} | Fit Job`;
+    window.scrollTo({ top: 0, left: 0 });
 }
 
 window.addEventListener('fitjob:navigate', (event) => {
-    mountPage(event.detail?.page);
+    const nextRoute = getDemoRoute(event.detail?.page).key;
+    const nextHash = routeHash(nextRoute);
+
+    if (window.location.hash === nextHash) {
+        mountPage(nextRoute);
+        return;
+    }
+
+    window.location.hash = nextHash;
 });
 
-mountPage(new URLSearchParams(window.location.search).get('page'));
+window.addEventListener('hashchange', () => {
+    mountPage(normalizeRouteKey());
+});
+
+if (!window.location.hash) {
+    window.history.replaceState(null, '', routeHash(normalizeRouteKey()));
+}
+
+mountPage(normalizeRouteKey());

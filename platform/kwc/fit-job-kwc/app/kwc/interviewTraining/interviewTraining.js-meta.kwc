@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<KingdeeComponentBundle xmlns="http://dev.kingdee.com/2025/10/metadata">
+    <version>1</version>
+    <name>interviewTraining</name>
+    <masterLabel>AI 模拟面试训练</masterLabel>
+    <description>面试类型、多轮问答、实时评分、四维报告与下一轮训练计划</description>
+    <isv></isv>
+    <app>fitjob</app>
+    <framework>lwc</framework>
+    <targets>
+        <target>KWCFormModel</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig>
+          <targets>KWCFormModel</targets>
+        </targetConfig>
+    </targetConfigs>
+</KingdeeComponentBundle>

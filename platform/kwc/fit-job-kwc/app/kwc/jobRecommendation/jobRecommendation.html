@@ -9,16 +9,19 @@
         </div>
       </div>
       <nav class="topnav" aria-label="学生端主导航">
-        <button class="nav-button" onclick={backToWorkbench}>学生工作台</button>
+        <button class="nav-button" onclick={openHome}>首页</button>
+        <button class="nav-button" onclick={openStudentWorkbench}>学生工作台</button>
         <button class="nav-button" onclick={openResumeDiagnosis}>智能简历</button>
-        <button class="nav-button nav-button--active">岗位推荐</button>
+        <button class="nav-button nav-button--active" onclick={openJobRecommendation}>岗位推荐</button>
+        <button class="nav-button" onclick={openInterviewTraining}>AI 面试</button>
         <button class="nav-button" onclick={openPolicyQa}>政策问答</button>
+        <button class="nav-button" onclick={openEmploymentDashboard}>就业驾驶舱</button>
       </nav>
       <div class="user">
-        <span class="avatar">林</span>
+        <span class="avatar">{studentAvatar}</span>
         <div>
-          <strong>林知夏</strong>
-          <small>软件工程 · 2027 届</small>
+          <strong>{studentName}</strong>
+          <small>{studentMeta}</small>
         </div>
       </div>
     </header>
@@ -68,7 +71,7 @@
               <span class="rank">01</span>
               <span class="job-main">
                 <strong>前端开发实习生</strong>
-                <small>云途科技 · 杭州 · 180-220 元/天</small>
+                <small>示例科技 A · 杭州 · 180-220 元/天</small>
               </span>
               <span class="score score--high">91</span>
             </button>
@@ -76,7 +79,7 @@
               <span class="rank">02</span>
               <span class="job-main">
                 <strong>AI 产品实习生</strong>
-                <small>星环智能 · 上海 · 200-250 元/天</small>
+                <small>示例智能 B · 上海 · 200-250 元/天</small>
               </span>
               <span class="score score--high">87</span>
             </button>
@@ -84,7 +87,7 @@
               <span class="rank">03</span>
               <span class="job-main">
                 <strong>数据可视化实习生</strong>
-                <small>数澜科技 · 杭州 · 160-210 元/天</small>
+                <small>示例数据 C · 杭州 · 160-210 元/天</small>
               </span>
               <span class="score score--mid">84</span>
             </button>
@@ -92,7 +95,7 @@
               <span class="rank">04</span>
               <span class="job-main">
                 <strong>低代码实施顾问实习生</strong>
-                <small>金石云服 · 南京 · 150-180 元/天</small>
+                <small>示例云服 D · 南京 · 150-180 元/天</small>
               </span>
               <span class="score score--mid">82</span>
             </button>
@@ -100,7 +103,7 @@
               <span class="rank">05</span>
               <span class="job-main">
                 <strong>Java 后端开发实习生</strong>
-                <small>辰海软件 · 苏州 · 170-220 元/天</small>
+                <small>示例软件 E · 苏州 · 170-220 元/天</small>
               </span>
               <span class="score score--risk">76</span>
             </button>
@@ -204,6 +207,12 @@
           <div><span>3</span><strong>批量排序</strong><small>按权重加权，处理 veto、过期和加急标记</small></div>
           <div><span>4</span><strong>申请闭环</strong><small>写入申请单，保留推荐理由、短板和追问建议</small></div>
         </div>
+      </section>
+
+      <section class="surface demo-flow">
+        <button class="button-secondary" onclick={openResumeDiagnosis}>← 上一步：简历诊断</button>
+        <div><span>演示第 4 / 7 步</span><strong>岗位推荐 → AI 面试</strong></div>
+        <button class="button-primary" onclick={openInterviewTraining}>下一步：AI 面试 →</button>
       </section>
     </main>
   </div>

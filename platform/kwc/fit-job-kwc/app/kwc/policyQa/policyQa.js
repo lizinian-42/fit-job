@@ -1,9 +1,10 @@
 import { KingdeeElement, track } from '@kdcloudjs/kwc';
-import { showForm } from '@kdcloudjs/kwc-shared-utils/sendBosPlatformEvent';
+import { policyQaCases, studentProfile } from '../demoData.js';
+import { navigateTo } from '../demoNavigation.js';
 
 export default class PolicyQa extends KingdeeElement {
     @track activeCategory = 'subsidy';
-    @track draftQuestion = '软件工程应届生在杭州就业有什么补贴？';
+    @track draftQuestion = policyQaCases[0].question;
     @track notice = '';
 
     get activeCategoryText() {
@@ -84,6 +85,18 @@ export default class PolicyQa extends KingdeeElement {
         return this.notice ? 'notice notice--visible' : 'notice';
     }
 
+    get studentName() {
+        return studentProfile.displayName;
+    }
+
+    get studentAvatar() {
+        return studentProfile.avatarText;
+    }
+
+    get studentMeta() {
+        return `示例地区 · ${studentProfile.graduationYear} 届毕业生`;
+    }
+
     selectSubsidy() {
         this.setCategory('subsidy', '已切换到就业补贴知识库分区。');
     }
@@ -133,31 +146,36 @@ export default class PolicyQa extends KingdeeElement {
         this.notice = '';
     }
 
-    backToWorkbench() {
-        if (this.isLocalPreview()) {
-            this.navigateLocal('student');
-            return;
-        }
+    openHome() {
+        navigateTo('home');
+    }
 
-        this.openForm('studentWorkbenchPage');
+    openStudentWorkbench() {
+        navigateTo('student');
+    }
+
+    backToWorkbench() {
+        navigateTo('student');
     }
 
     openResumeDiagnosis() {
-        if (this.isLocalPreview()) {
-            this.navigateLocal('resume');
-            return;
-        }
-
-        this.openForm('resumeDiagnosisPage');
+        navigateTo('resume');
     }
 
     openJobRecommendation() {
-        if (this.isLocalPreview()) {
-            this.navigateLocal('jobs');
-            return;
-        }
+        navigateTo('jobs');
+    }
 
-        this.openForm('jobRecommendationPage');
+    openInterviewTraining() {
+        navigateTo('interview');
+    }
+
+    openPolicyQa() {
+        navigateTo('policy');
+    }
+
+    openEmploymentDashboard() {
+        navigateTo('dashboard');
     }
 
     getCategoryClass(category) {
@@ -169,22 +187,4 @@ export default class PolicyQa extends KingdeeElement {
         this.notice = message;
     }
 
-    openForm(formId) {
-        showForm(
-            {
-                formId,
-                parentPageId: '',
-                params: { openStyle: { showType: 10 } }
-            },
-            { version: 'v1', isv: '', app: 'fitjob' }
-        );
-    }
-
-    isLocalPreview() {
-        return ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    }
-
-    navigateLocal(page) {
-        window.dispatchEvent(new CustomEvent('fitjob:navigate', { detail: { page } }));
-    }
 }

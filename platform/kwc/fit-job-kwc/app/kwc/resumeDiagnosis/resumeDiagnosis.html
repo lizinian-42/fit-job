@@ -9,16 +9,19 @@
         </div>
       </div>
       <nav class="topnav" aria-label="学生端主导航">
-        <button class="nav-button" onclick={backToWorkbench}>学生工作台</button>
+        <button class="nav-button" onclick={openHome}>首页</button>
+        <button class="nav-button" onclick={openStudentWorkbench}>学生工作台</button>
         <button class="nav-button nav-button--active">智能简历</button>
         <button class="nav-button" onclick={openJobRecommendation}>岗位推荐</button>
+        <button class="nav-button" onclick={openInterviewTraining}>AI 面试</button>
         <button class="nav-button" onclick={openPolicyQa}>政策问答</button>
+        <button class="nav-button" onclick={openEmploymentDashboard}>就业驾驶舱</button>
       </nav>
       <div class="user">
-        <span class="avatar">林</span>
+        <span class="avatar">{studentAvatar}</span>
         <div>
-          <strong>林知夏</strong>
-          <small>软件工程 · 2027 届</small>
+          <strong>{studentName}</strong>
+          <small>{studentMeta}</small>
         </div>
       </div>
     </header>
@@ -51,9 +54,9 @@
             <label for="target-job">目标岗位</label>
             <div class="select-wrap">
               <select id="target-job" onchange={handleJobChange}>
-                <option>前端开发实习生 · 云途科技</option>
-                <option>AI 产品实习生 · 星环智能</option>
-                <option>数据可视化实习生 · 数澜科技</option>
+                <option>前端开发实习生 · 示例科技 A</option>
+                <option>AI 产品实习生 · 示例智能 B</option>
+                <option>数据可视化实习生 · 示例数据 C</option>
               </select>
             </div>
           </div>
@@ -193,6 +196,12 @@
           </div>
         </section>
       </div>
+
+      <section class="surface demo-flow">
+        <button class="button-secondary" onclick={openStudentWorkbench}>← 上一步：学生工作台</button>
+        <div><span>演示第 3 / 7 步</span><strong>简历诊断 → 岗位推荐</strong></div>
+        <button class="button-primary" onclick={openJobRecommendation}>下一步：岗位推荐 →</button>
+      </section>
     </main>
   </div>
 </template>

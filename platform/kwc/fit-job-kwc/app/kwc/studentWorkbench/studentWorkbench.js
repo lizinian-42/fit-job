@@ -1,5 +1,6 @@
 import { KingdeeElement, track } from '@kdcloudjs/kwc';
-import { showForm } from '@kdcloudjs/kwc-shared-utils/sendBosPlatformEvent';
+import { studentProfile } from '../demoData.js';
+import { navigateTo } from '../demoNavigation.js';
 
 export default class StudentWorkbench extends KingdeeElement {
   @track notice = '';
@@ -40,20 +41,28 @@ export default class StudentWorkbench extends KingdeeElement {
       return `${3 - completed} 项待完成`;
   }
 
-  openResumeDiagnosis() {
-      if (this.isLocalPreview()) {
-          this.navigateLocal('resume');
-          return;
-      }
+  get studentName() {
+      return studentProfile.displayName;
+  }
 
-      showForm(
-          {
-              formId: 'resumeDiagnosisPage',
-              parentPageId: '',
-              params: { openStyle: { showType: 10 } }
-          },
-          { version: 'v1', isv: '', app: 'fitjob' }
-      );
+  get studentAvatar() {
+      return studentProfile.avatarText;
+  }
+
+  get studentMeta() {
+      return `${studentProfile.majorName} · ${studentProfile.graduationYear} 届`;
+  }
+
+  openHome() {
+      navigateTo('home');
+  }
+
+  openStudentWorkbench() {
+      navigateTo('student');
+  }
+
+  openResumeDiagnosis() {
+      navigateTo('resume');
   }
 
   refreshJobs() {
@@ -61,23 +70,11 @@ export default class StudentWorkbench extends KingdeeElement {
   }
 
   openJobRecommendation() {
-      if (this.isLocalPreview()) {
-          this.navigateLocal('jobs');
-          return;
-      }
-
-      showForm(
-          {
-              formId: 'jobRecommendationPage',
-              parentPageId: '',
-              params: { openStyle: { showType: 10 } }
-          },
-          { version: 'v1', isv: '', app: 'fitjob' }
-      );
+      navigateTo('jobs');
   }
 
   openInterviewTraining() {
-      this.showNotice('AI 面试训练入口已准备，可继续接入面试训练页面。');
+      navigateTo('interview');
   }
 
   openInternshipLog() {
@@ -85,19 +82,11 @@ export default class StudentWorkbench extends KingdeeElement {
   }
 
   openPolicyQa() {
-      if (this.isLocalPreview()) {
-          this.navigateLocal('policy');
-          return;
-      }
+      navigateTo('policy');
+  }
 
-      showForm(
-          {
-              formId: 'policyQaPage',
-              parentPageId: '',
-              params: { openStyle: { showType: 10 } }
-          },
-          { version: 'v1', isv: '', app: 'fitjob' }
-      );
+  openEmploymentDashboard() {
+      navigateTo('dashboard');
   }
 
   openFirstJob() {
@@ -126,13 +115,5 @@ export default class StudentWorkbench extends KingdeeElement {
 
   showNotice(message) {
       this.notice = message;
-  }
-
-  isLocalPreview() {
-      return ['localhost', '127.0.0.1'].includes(window.location.hostname);
-  }
-
-  navigateLocal(page) {
-      window.dispatchEvent(new CustomEvent('fitjob:navigate', { detail: { page } }));
   }
 }

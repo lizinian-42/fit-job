@@ -1,9 +1,10 @@
 import { KingdeeElement, track } from '@kdcloudjs/kwc';
-import { showForm } from '@kdcloudjs/kwc-shared-utils/sendBosPlatformEvent';
+import { jobPostings, resumeDiagnosis as mockResumeDiagnosis, studentProfile } from '../demoData.js';
+import { navigateTo } from '../demoNavigation.js';
 
 export default class ResumeDiagnosis extends KingdeeElement {
-  @track selectedResume = '前端开发简历 V3';
-  @track selectedJob = '前端开发实习生 · 云途科技';
+  @track selectedResume = mockResumeDiagnosis.resumeVersion;
+  @track selectedJob = `${jobPostings[0].title} · ${jobPostings[0].companyName}`;
   @track uploadedFile = '';
   @track diagnosing = false;
   @track diagnosedAt = '2026-07-18 21:42';
@@ -65,6 +66,18 @@ export default class ResumeDiagnosis extends KingdeeElement {
 
   get noticeClass() {
       return this.notice ? 'notice notice--visible' : 'notice';
+  }
+
+  get studentName() {
+      return studentProfile.displayName;
+  }
+
+  get studentAvatar() {
+      return studentProfile.avatarText;
+  }
+
+  get studentMeta() {
+      return `${studentProfile.majorName} · ${studentProfile.graduationYear} 届`;
   }
 
   handleResumeChange(event) {
@@ -132,52 +145,32 @@ export default class ResumeDiagnosis extends KingdeeElement {
       this.notice = '';
   }
 
-  backToWorkbench() {
-      if (this.isLocalPreview()) {
-          window.dispatchEvent(new CustomEvent('fitjob:navigate', { detail: { page: 'student' } }));
-          return;
-      }
+  openHome() {
+      navigateTo('home');
+  }
 
-      showForm(
-          {
-              formId: 'studentWorkbenchPage',
-              parentPageId: '',
-              params: { openStyle: { showType: 10 } }
-          },
-          { version: 'v1', isv: '', app: 'fitjob' }
-      );
+  openStudentWorkbench() {
+      navigateTo('student');
+  }
+
+  backToWorkbench() {
+      navigateTo('student');
   }
 
   openJobRecommendation() {
-      if (this.isLocalPreview()) {
-          window.dispatchEvent(new CustomEvent('fitjob:navigate', { detail: { page: 'jobs' } }));
-          return;
-      }
+      navigateTo('jobs');
+  }
 
-      showForm(
-          {
-              formId: 'jobRecommendationPage',
-              parentPageId: '',
-              params: { openStyle: { showType: 10 } }
-          },
-          { version: 'v1', isv: '', app: 'fitjob' }
-      );
+  openInterviewTraining() {
+      navigateTo('interview');
   }
 
   openPolicyQa() {
-      if (this.isLocalPreview()) {
-          window.dispatchEvent(new CustomEvent('fitjob:navigate', { detail: { page: 'policy' } }));
-          return;
-      }
+      navigateTo('policy');
+  }
 
-      showForm(
-          {
-              formId: 'policyQaPage',
-              parentPageId: '',
-              params: { openStyle: { showType: 10 } }
-          },
-          { version: 'v1', isv: '', app: 'fitjob' }
-      );
+  openEmploymentDashboard() {
+      navigateTo('dashboard');
   }
 
   getSuggestionClass(status) {
@@ -200,7 +193,4 @@ export default class ResumeDiagnosis extends KingdeeElement {
       return '待处理';
   }
 
-  isLocalPreview() {
-      return ['localhost', '127.0.0.1'].includes(window.location.hostname);
-  }
 }

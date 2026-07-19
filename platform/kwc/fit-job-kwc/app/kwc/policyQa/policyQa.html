@@ -9,16 +9,19 @@
         </div>
       </div>
       <nav class="topnav" aria-label="学生端主导航">
-        <button class="nav-button" onclick={backToWorkbench}>学生工作台</button>
+        <button class="nav-button" onclick={openHome}>首页</button>
+        <button class="nav-button" onclick={openStudentWorkbench}>学生工作台</button>
         <button class="nav-button" onclick={openResumeDiagnosis}>智能简历</button>
         <button class="nav-button" onclick={openJobRecommendation}>岗位推荐</button>
-        <button class="nav-button nav-button--active">政策问答</button>
+        <button class="nav-button" onclick={openInterviewTraining}>AI 面试</button>
+        <button class="nav-button nav-button--active" onclick={openPolicyQa}>政策问答</button>
+        <button class="nav-button" onclick={openEmploymentDashboard}>就业驾驶舱</button>
       </nav>
       <div class="user">
-        <span class="avatar">林</span>
+        <span class="avatar">{studentAvatar}</span>
         <div>
-          <strong>林知夏</strong>
-          <small>杭州 · 2027 届毕业生</small>
+          <strong>{studentName}</strong>
+          <small>{studentMeta}</small>
         </div>
       </div>
     </header>
@@ -122,7 +125,7 @@
               <p>如果你是毕业 2 年内的高校毕业生，在杭州与用人单位签订劳动合同并依法参保，可重点关注就业补贴、生活补贴与租房补贴。系统建议先核对毕业时间、社保缴纳地、劳动合同主体和是否已享受同类补贴。</p>
               <div class="reference-row">
                 <span>referenceInfos</span>
-                <a href="https://example.gov.cn/hangzhou-employment-subsidy" target="_blank" rel="noreferrer">杭州市高校毕业生就业补贴政策</a>
+                <a href="https://example.com/mock-policy/012" target="_blank" rel="noreferrer">模拟政策：高校毕业生就业补贴条目 12</a>
               </div>
             </article>
 
@@ -137,7 +140,7 @@
               <p>通常需要身份证明、毕业证明或学籍证明、营业执照、创业项目说明、贷款申请表和担保材料。不同地区对担保方式、贴息比例和贷款额度有差异，提交前应以当地人社部门最新办事指南为准。</p>
               <div class="reference-row">
                 <span>referenceInfos</span>
-                <a href="https://example.gov.cn/startup-loan-guide" target="_blank" rel="noreferrer">高校毕业生创业担保贷款办事指南</a>
+                <a href="https://example.com/mock-policy/007" target="_blank" rel="noreferrer">模拟政策：创业担保贷款条目 07</a>
               </div>
             </article>
 
@@ -152,7 +155,7 @@
               <p>就业见习补贴通常发放给符合条件的见习基地或见习人员，是否能与实习工资并行取决于当地见习身份认定、补贴对象和资金发放规则。建议确认岗位是否属于备案见习基地，并保留见习协议和考勤证明。</p>
               <div class="reference-row">
                 <span>referenceInfos</span>
-                <a href="https://example.gov.cn/youth-trainee-program" target="_blank" rel="noreferrer">青年就业见习项目管理办法</a>
+                <a href="https://example.com/mock-policy/018" target="_blank" rel="noreferrer">模拟政策：青年就业见习条目 18</a>
               </div>
             </article>
           </div>
@@ -168,22 +171,22 @@
             </div>
             <div class="source-list">
               <article>
-                <strong>杭州市高校毕业生就业补贴政策</strong>
-                <span>地区：杭州</span>
+                <strong>模拟政策：高校毕业生就业补贴条目 12</strong>
+                <span>地区：示例地区</span>
                 <span>适用对象：毕业 2 年内高校毕业生</span>
-                <a href="https://example.gov.cn/hangzhou-employment-subsidy" target="_blank" rel="noreferrer">来源链接</a>
+                <a href="https://example.com/mock-policy/012" target="_blank" rel="noreferrer">模拟来源链接</a>
               </article>
               <article>
-                <strong>高校毕业生创业担保贷款办事指南</strong>
-                <span>地区：浙江省</span>
+                <strong>模拟政策：创业担保贷款条目 07</strong>
+                <span>地区：示例地区</span>
                 <span>适用对象：高校毕业生创业者</span>
-                <a href="https://example.gov.cn/startup-loan-guide" target="_blank" rel="noreferrer">来源链接</a>
+                <a href="https://example.com/mock-policy/007" target="_blank" rel="noreferrer">模拟来源链接</a>
               </article>
               <article>
-                <strong>青年就业见习项目管理办法</strong>
-                <span>地区：全国/地方细则</span>
+                <strong>模拟政策：青年就业见习条目 18</strong>
+                <span>地区：示例地区</span>
                 <span>适用对象：离校未就业毕业生</span>
-                <a href="https://example.gov.cn/youth-trainee-program" target="_blank" rel="noreferrer">来源链接</a>
+                <a href="https://example.com/mock-policy/018" target="_blank" rel="noreferrer">模拟来源链接</a>
               </article>
             </div>
           </section>
@@ -223,6 +226,12 @@
           </section>
         </aside>
       </div>
+
+      <section class="surface demo-flow">
+        <button class="button-secondary" onclick={openInterviewTraining}>← 上一步：AI 面试</button>
+        <div><span>演示第 6 / 7 步</span><strong>政策问答 → 就业驾驶舱</strong></div>
+        <button class="button-primary" onclick={openEmploymentDashboard}>下一步：就业驾驶舱 →</button>
+      </section>
     </main>
   </div>
 </template>

@@ -441,7 +441,8 @@ input {
   box-shadow: 0 0 0 4px rgba(47, 115, 242, 0.09);
 }
 
-.button-primary {
+.button-primary,
+.button-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -454,6 +455,18 @@ input {
   cursor: pointer;
   font-size: 12px;
   font-weight: 900;
+}
+
+.button-primary {
+  border: 1px solid #2f73f2;
+  color: #fff;
+  background: #2f73f2;
+}
+
+.button-secondary {
+  border: 1px solid #d7e1ee;
+  color: #30425b;
+  background: #fff;
 }
 
 .answer-list {
@@ -641,6 +654,35 @@ a {
   line-height: 1.65;
 }
 
+.demo-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 14px;
+}
+
+.demo-flow > div {
+  min-width: 0;
+  text-align: center;
+}
+
+.demo-flow span,
+.demo-flow strong {
+  display: block;
+}
+
+.demo-flow span {
+  color: #718096;
+  font-size: 9px;
+}
+
+.demo-flow strong {
+  margin-top: 4px;
+  font-size: 11px;
+}
+
 @media (max-width: 1160px) {
   .topnav {
     display: none;
@@ -668,7 +710,8 @@ a {
 
   .page-heading,
   .hero,
-  .section-heading {
+  .section-heading,
+  .demo-flow {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -705,7 +748,8 @@ a {
   }
 
   .hero-stack div,
-  .button-primary {
+  .button-primary,
+  .button-secondary {
     width: 100%;
   }
 }
