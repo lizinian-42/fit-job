@@ -1,0 +1,123 @@
+<template>
+  <div class="page">
+    <header class="topbar">
+      <button class="brand" onclick={openHome}>
+        <span class="brand-mark">FJ</span>
+        <span>
+          <strong>Fit Job</strong>
+          <small>AI 就业实习云平台</small>
+        </span>
+      </button>
+      <nav class="topnav" aria-label="第一阶段演示导航">
+        <button class="nav-button nav-button--active">首页</button>
+        <button class="nav-button" onclick={openStudentWorkbench}>学生工作台</button>
+        <button class="nav-button" onclick={openResumeDiagnosis}>简历诊断</button>
+        <button class="nav-button" onclick={openJobRecommendation}>岗位推荐</button>
+        <button class="nav-button" onclick={openInterviewTraining}>AI 面试</button>
+        <button class="nav-button" onclick={openPolicyQa}>政策问答</button>
+        <button class="nav-button" onclick={openEmploymentDashboard}>就业驾驶舱</button>
+      </nav>
+      <span class="stage-badge">Milestone 1</span>
+    </header>
+
+    <main class="content">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Demo Storyline</p>
+          <h1>从一位匿名学生出发，演示就业服务的完整业务闭环</h1>
+          <p>
+            同一组 Mock 数据贯穿学生画像、简历诊断、岗位匹配、AI 面试、政策问答与院系驾驶舱，
+            页面结构同时为后续苍穹表单字段和 Java DTO 提供参考。
+          </p>
+          <div class="button-row">
+            <button class="button-primary" onclick={openStudentWorkbench}>开始完整演示 →</button>
+            <button class="button-secondary" onclick={openEmploymentDashboard}>直接查看管理端</button>
+          </div>
+        </div>
+        <div class="hero-summary">
+          <div><strong>{routeCount}</strong><span>个可访问页面</span></div>
+          <div><strong>{storyStepCount}</strong><span>步核心故事线</span></div>
+          <div><strong>{contractVersion}</strong><span>Mock 契约版本</span></div>
+        </div>
+      </section>
+
+      <section class="story-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Guided Demo</p>
+            <h2>建议演示顺序</h2>
+          </div>
+          <span>当前故事主角：{profileName}</span>
+        </div>
+        <div class="story-grid">
+          <button onclick={openStudentWorkbench}><span>01</span><strong>学生工作台</strong><small>确认画像、待办与成长任务</small></button>
+          <button onclick={openResumeDiagnosis}><span>02</span><strong>简历诊断</strong><small>识别关键词缺口与改写建议</small></button>
+          <button onclick={openJobRecommendation}><span>03</span><strong>岗位推荐</strong><small>解释六维匹配与风险条件</small></button>
+          <button onclick={openInterviewTraining}><span>04</span><strong>AI 面试</strong><small>完成多轮问答并生成报告</small></button>
+          <button onclick={openPolicyQa}><span>05</span><strong>政策问答</strong><small>查看答案与模拟来源引用</small></button>
+          <button onclick={openEmploymentDashboard}><span>06</span><strong>就业驾驶舱</strong><small>回到院系视角查看趋势与风险</small></button>
+        </div>
+      </section>
+
+      <section class="module-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">M1 Modules</p>
+            <h2>页面入口</h2>
+          </div>
+          <span>每个页面均提供返回与下一步入口</span>
+        </div>
+        <div class="module-grid">
+          <button class="module-card" onclick={openStudentWorkbench}>
+            <span class="module-mark">人</span>
+            <strong>学生工作台</strong>
+            <p>匿名学生画像、求职准备度、待办任务和成长档案。</p>
+            <small>进入页面 →</small>
+          </button>
+          <button class="module-card" onclick={openResumeDiagnosis}>
+            <span class="module-mark">简</span>
+            <strong>简历诊断</strong>
+            <p>目标 JD、关键词覆盖、结构诊断和 AI 改写建议。</p>
+            <small>进入页面 →</small>
+          </button>
+          <button class="module-card" onclick={openJobRecommendation}>
+            <span class="module-mark">岗</span>
+            <strong>岗位推荐</strong>
+            <p>六维匹配、推荐证据、风险提示和申请动作。</p>
+            <small>进入页面 →</small>
+          </button>
+          <button class="module-card" onclick={openInterviewTraining}>
+            <span class="module-mark">面</span>
+            <strong>AI 面试</strong>
+            <p>三类面试、多轮问题、实时评分和训练报告。</p>
+            <small>进入页面 →</small>
+          </button>
+          <button class="module-card" onclick={openPolicyQa}>
+            <span class="module-mark">策</span>
+            <strong>政策问答</strong>
+            <p>模拟 RAG 检索、材料提示与 referenceInfos。</p>
+            <small>进入页面 →</small>
+          </button>
+          <button class="module-card" onclick={openEmploymentDashboard}>
+            <span class="module-mark">数</span>
+            <strong>就业驾驶舱</strong>
+            <p>就业率、趋势、行业分布、薪资和风险学生。</p>
+            <small>进入页面 →</small>
+          </button>
+        </div>
+      </section>
+
+      <section class="contract-strip">
+        <div>
+          <span>Mock Data Contract</span>
+          <strong>匿名演示数据，不连接真实学生、企业或政务系统</strong>
+        </div>
+        <div>
+          <span>Downstream</span>
+          <strong>可映射苍穹表单字段、Java DTO 与 Agent JSON 输出</strong>
+        </div>
+        <button class="button-primary" onclick={openStudentWorkbench}>下一步：学生工作台 →</button>
+      </section>
+    </main>
+  </div>
+</template>

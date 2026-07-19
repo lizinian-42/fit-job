@@ -626,7 +626,8 @@ button {
 }
 
 .button-primary,
-.button-done {
+.button-done,
+.button-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -648,6 +649,12 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: rgba(255, 255, 255, 0.7);
   background: rgba(255, 255, 255, 0.1);
+}
+
+.button-secondary {
+  border: 1px solid #d7e1ee;
+  color: #30425b;
+  background: #fff;
 }
 
 .workflow {
@@ -697,6 +704,35 @@ button {
   line-height: 1.7;
 }
 
+.demo-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 14px;
+}
+
+.demo-flow > div {
+  min-width: 0;
+  text-align: center;
+}
+
+.demo-flow span,
+.demo-flow strong {
+  display: block;
+}
+
+.demo-flow span {
+  color: #718096;
+  font-size: 9px;
+}
+
+.demo-flow strong {
+  margin-top: 4px;
+  font-size: 11px;
+}
+
 @media (max-width: 1160px) {
   .topnav {
     display: none;
@@ -724,7 +760,8 @@ button {
 
   .page-heading,
   .hero,
-  .apply-panel {
+  .apply-panel,
+  .demo-flow {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -738,7 +775,8 @@ button {
 
   .hero-score,
   .button-primary,
-  .button-done {
+  .button-done,
+  .button-secondary {
     width: 100%;
   }
 }

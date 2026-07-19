@@ -810,6 +810,35 @@ select:focus {
   min-height: 38px;
 }
 
+.demo-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 14px;
+}
+
+.demo-flow > div {
+  min-width: 0;
+  text-align: center;
+}
+
+.demo-flow span,
+.demo-flow strong {
+  display: block;
+}
+
+.demo-flow span {
+  color: #718096;
+  font-size: 9px;
+}
+
+.demo-flow strong {
+  margin-top: 4px;
+  font-size: 11px;
+}
+
 @media (max-width: 1100px) {
   .topnav {
     display: none;
@@ -861,13 +890,16 @@ select:focus {
   .file-row,
   .suggestion-head,
   .suggestions-heading,
-  .draft-bar {
+  .draft-bar,
+  .demo-flow {
     align-items: flex-start;
     flex-direction: column;
   }
 
   .upload-button,
-  .draft-bar .button-primary {
+  .draft-bar .button-primary,
+  .demo-flow .button-primary,
+  .demo-flow .button-secondary {
     width: 100%;
   }
 

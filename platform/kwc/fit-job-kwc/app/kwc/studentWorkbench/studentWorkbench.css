@@ -726,6 +726,35 @@ button {
   font-size: 9px;
 }
 
+.demo-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 14px;
+}
+
+.demo-flow > div {
+  min-width: 0;
+  text-align: center;
+}
+
+.demo-flow span,
+.demo-flow strong {
+  display: block;
+}
+
+.demo-flow span {
+  color: #718096;
+  font-size: 9px;
+}
+
+.demo-flow strong {
+  margin-top: 4px;
+  font-size: 11px;
+}
+
 @media (max-width: 1120px) {
   .topnav {
     display: none;
@@ -792,5 +821,15 @@ button {
   .section-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .demo-flow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .demo-flow .button-primary,
+  .demo-flow .button-secondary {
+    width: 100%;
   }
 }

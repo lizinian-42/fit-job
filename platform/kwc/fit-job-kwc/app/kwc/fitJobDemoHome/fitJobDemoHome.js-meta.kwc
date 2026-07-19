@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<KingdeeComponentBundle xmlns="http://dev.kingdee.com/2025/10/metadata">
+    <version>1</version>
+    <name>fitJobDemoHome</name>
+    <masterLabel>Fit Job 第一阶段演示首页</masterLabel>
+    <description>第一阶段演示故事线、页面入口、匿名 Mock 数据说明与完整导航</description>
+    <isv></isv>
+    <app>fitjob</app>
+    <framework>lwc</framework>
+    <targets>
+        <target>KWCFormModel</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig>
+          <targets>KWCFormModel</targets>
+        </targetConfig>
+    </targetConfigs>
+</KingdeeComponentBundle>

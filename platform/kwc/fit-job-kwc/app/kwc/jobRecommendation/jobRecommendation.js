@@ -1,10 +1,11 @@
 import { KingdeeElement, track } from '@kdcloudjs/kwc';
-import { showForm } from '@kdcloudjs/kwc-shared-utils/sendBosPlatformEvent';
+import { studentProfile } from '../demoData.js';
+import { navigateTo } from '../demoNavigation.js';
 
 const JOBS = {
     one: {
         title: '前端开发实习生',
-        company: '云途科技 · 杭州 · 180-220 元/天 · 每周 3 天',
+        company: '示例科技 A · 杭州 · 180-220 元/天 · 每周 3 天',
         score: 91,
         dimensions: [94, 88, 92, 90, 86, 84],
         reason: 'React、TypeScript 与数据可视化经历命中 JD 的核心硬技能；项目交付经历可映射到经验胜任力，城市、节奏和成长方向均匹配。',
@@ -14,7 +15,7 @@ const JOBS = {
     },
     two: {
         title: 'AI 产品实习生',
-        company: '星环智能 · 上海 · 200-250 元/天 · 可转正',
+        company: '示例智能 B · 上海 · 200-250 元/天 · 可转正',
         score: 87,
         dimensions: [82, 86, 92, 88, 94, 78],
         reason: 'AI 产品原型、需求分析和技术背景形成互补，文化价值观与探索型团队较贴合，工作驱动力分数高。',
@@ -24,7 +25,7 @@ const JOBS = {
     },
     three: {
         title: '数据可视化实习生',
-        company: '数澜科技 · 杭州 · 160-210 元/天 · 远程友好',
+        company: '示例数据 C · 杭州 · 160-210 元/天 · 远程友好',
         score: 84,
         dimensions: [86, 84, 88, 82, 80, 84],
         reason: 'ECharts、就业驾驶舱和前端交互经历与岗位需求贴合，基础资质风险低，可较快承担看板组件开发。',
@@ -34,7 +35,7 @@ const JOBS = {
     },
     four: {
         title: '低代码实施顾问实习生',
-        company: '金石云服 · 南京 · 150-180 元/天 · 项目制',
+        company: '示例云服 D · 南京 · 150-180 元/天 · 项目制',
         score: 82,
         dimensions: [78, 80, 86, 88, 84, 76],
         reason: '苍穹低代码项目经历与平台配置意识加分，适合参与表单、流程、权限模型和客户化页面落地。',
@@ -44,7 +45,7 @@ const JOBS = {
     },
     five: {
         title: 'Java 后端开发实习生',
-        company: '辰海软件 · 苏州 · 170-220 元/天 · Java 17',
+        company: '示例软件 E · 苏州 · 170-220 元/天 · Java 17',
         score: 76,
         dimensions: [70, 74, 72, 82, 78, 62],
         reason: '具备 TypeScript 与部分 Java 基础，若聚焦 AI 网关或匹配服务方向，仍有成长空间。',
@@ -176,6 +177,18 @@ export default class JobRecommendation extends KingdeeElement {
         return this.isSelectedApplied() ? '申请状态：已提交，等待辅导员审核' : '申请状态：草稿，可从推荐岗位一键发起';
     }
 
+    get studentName() {
+        return studentProfile.displayName;
+    }
+
+    get studentAvatar() {
+        return studentProfile.avatarText;
+    }
+
+    get studentMeta() {
+        return `${studentProfile.majorName} · ${studentProfile.graduationYear} 届`;
+    }
+
     selectJobOne() {
         this.selectedJobId = 'one';
     }
@@ -221,31 +234,36 @@ export default class JobRecommendation extends KingdeeElement {
         this.notice = '';
     }
 
-    backToWorkbench() {
-        if (this.isLocalPreview()) {
-            this.navigateLocal('student');
-            return;
-        }
+    openHome() {
+        navigateTo('home');
+    }
 
-        this.openForm('studentWorkbenchPage');
+    openStudentWorkbench() {
+        navigateTo('student');
+    }
+
+    backToWorkbench() {
+        navigateTo('student');
     }
 
     openResumeDiagnosis() {
-        if (this.isLocalPreview()) {
-            this.navigateLocal('resume');
-            return;
-        }
+        navigateTo('resume');
+    }
 
-        this.openForm('resumeDiagnosisPage');
+    openJobRecommendation() {
+        navigateTo('jobs');
+    }
+
+    openInterviewTraining() {
+        navigateTo('interview');
     }
 
     openPolicyQa() {
-        if (this.isLocalPreview()) {
-            this.navigateLocal('policy');
-            return;
-        }
+        navigateTo('policy');
+    }
 
-        this.openForm('policyQaPage');
+    openEmploymentDashboard() {
+        navigateTo('dashboard');
     }
 
     getJobClass(jobId) {
@@ -282,22 +300,4 @@ export default class JobRecommendation extends KingdeeElement {
         }
     }
 
-    openForm(formId) {
-        showForm(
-            {
-                formId,
-                parentPageId: '',
-                params: { openStyle: { showType: 10 } }
-            },
-            { version: 'v1', isv: '', app: 'fitjob' }
-        );
-    }
-
-    isLocalPreview() {
-        return ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    }
-
-    navigateLocal(page) {
-        window.dispatchEvent(new CustomEvent('fitjob:navigate', { detail: { page } }));
-    }
 }

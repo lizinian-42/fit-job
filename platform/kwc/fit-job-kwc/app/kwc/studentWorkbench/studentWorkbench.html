@@ -9,17 +9,19 @@
         </div>
       </div>
       <nav class="topnav" aria-label="学生端主导航">
-        <button class="nav-button nav-button--active">学生工作台</button>
+        <button class="nav-button" onclick={openHome}>首页</button>
+        <button class="nav-button nav-button--active" onclick={openStudentWorkbench}>学生工作台</button>
         <button class="nav-button" onclick={openResumeDiagnosis}>智能简历</button>
         <button class="nav-button" onclick={openJobRecommendation}>岗位推荐</button>
         <button class="nav-button" onclick={openInterviewTraining}>AI 面试</button>
         <button class="nav-button" onclick={openPolicyQa}>政策问答</button>
+        <button class="nav-button" onclick={openEmploymentDashboard}>就业驾驶舱</button>
       </nav>
       <div class="user">
-        <span class="avatar">林</span>
+        <span class="avatar">{studentAvatar}</span>
         <div>
-          <strong>林知夏</strong>
-          <small>软件工程 · 2027 届</small>
+          <strong>{studentName}</strong>
+          <small>{studentMeta}</small>
         </div>
       </div>
     </header>
@@ -27,7 +29,7 @@
     <main class="content">
       <section class="hero">
         <div class="hero-copy">
-          <p class="hero-kicker">✦ 晚上好，林知夏</p>
+          <p class="hero-kicker">✦ 晚上好，{studentName}</p>
           <h1>你的求职节奏很稳，再完成 3 项资料就能解锁更精准推荐</h1>
           <p class="hero-description">
             本周已新增 2 份岗位申请，前端开发方向平均匹配度达到 89%。建议优先完善项目量化结果，并完成下一轮技术面训练。
@@ -135,7 +137,7 @@
                 <div class="job-head">
                   <div>
                     <h3>前端开发实习生</h3>
-                    <p class="job-company">云途科技</p>
+                    <p class="job-company">示例科技 A</p>
                   </div>
                   <span class="badge">91% 匹配</span>
                 </div>
@@ -154,7 +156,7 @@
                 <div class="job-head">
                   <div>
                     <h3>AI 产品实习生</h3>
-                    <p class="job-company">星环智能</p>
+                    <p class="job-company">示例智能 B</p>
                   </div>
                   <span class="badge">87% 匹配</span>
                 </div>
@@ -178,7 +180,7 @@
             <div class="profile-header">
               <div>
                 <p>学生画像摘要</p>
-                <h2>林知夏</h2>
+                <h2>{studentName}</h2>
               </div>
               <span class="badge">积极求职中</span>
             </div>
@@ -219,7 +221,7 @@
               <button class={todoJobClass} onclick={toggleJobTodo}>
                 <span class="todo-check">{todoJobMark}</span>
                 <span>
-                  <strong>投递云途科技前端实习生</strong>
+                  <strong>投递示例科技 A 前端实习生</strong>
                   <small>岗位匹配度 91%，申请即将截止</small>
                   <time>明天 12:00</time>
                 </span>
@@ -255,6 +257,12 @@
           </section>
         </aside>
       </div>
+
+      <section class="surface demo-flow">
+        <button class="button-secondary" onclick={openHome}>← 上一步：首页</button>
+        <div><span>演示第 2 / 7 步</span><strong>学生工作台 → 简历诊断</strong></div>
+        <button class="button-primary" onclick={openResumeDiagnosis}>下一步：简历诊断 →</button>
+      </section>
     </main>
   </div>
 </template>
