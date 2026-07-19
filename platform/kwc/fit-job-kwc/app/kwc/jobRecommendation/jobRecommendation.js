@@ -1,6 +1,7 @@
 import { KingdeeElement, track } from '@kdcloudjs/kwc';
-import { jobPostings, studentProfile } from '../demoData.js';
+import { jobApplications, jobPostings, resumeRecords, studentProfile } from '../demoData.js';
 import { navigateTo } from '../demoNavigation.js';
+import { submitJobApplication } from '../applicationGateway.js';
 
 const JOBS = Object.fromEntries(jobPostings.map((job) => [
     job.key,
@@ -10,16 +11,21 @@ const JOBS = Object.fromEntries(jobPostings.map((job) => [
         score: job.matchScore
     }
 ]));
+const SUBMITTED_APPLICATION_STATUSES = new Set(['SUBMITTED', 'COMPANY_REVIEW', 'INTERVIEW', 'OFFERED']);
+const appliedJobIds = new Set(jobApplications
+    .filter((application) => SUBMITTED_APPLICATION_STATUSES.has(application.status))
+    .map((application) => application.jobId));
 
 export default class JobRecommendation extends KingdeeElement {
     @track selectedJobId = 'one';
     @track notice = '';
     @track rankedAt = '2026-07-18 22:56';
-    @track appliedOne = false;
-    @track appliedTwo = false;
-    @track appliedThree = false;
-    @track appliedFour = false;
-    @track appliedFive = false;
+    @track appliedOne = appliedJobIds.has(JOBS.one.jobId);
+    @track appliedTwo = appliedJobIds.has(JOBS.two.jobId);
+    @track appliedThree = appliedJobIds.has(JOBS.three.jobId);
+    @track appliedFour = appliedJobIds.has(JOBS.four.jobId);
+    @track appliedFive = appliedJobIds.has(JOBS.five.jobId);
+    @track submittingApplication = false;
 
     get selectedJob() {
         return JOBS[this.selectedJobId];
@@ -176,14 +182,36 @@ export default class JobRecommendation extends KingdeeElement {
         this.notice = '已基于最新学生画像重新排序，当前推荐列表保持稳定。';
     }
 
-    applySelectedJob() {
+    async applySelectedJob() {
         if (this.isSelectedApplied()) {
             this.notice = `「${this.selectedTitle}」申请单已提交，请等待辅导员审核。`;
             return;
         }
 
-        this.setApplied(this.selectedJobId);
-        this.notice = `已生成「${this.selectedTitle}」岗位申请单，状态：已提交。`;
+        if (this.submittingApplication) {
+            return;
+        }
+
+        this.submittingApplication = true;
+        const requestedJobId = this.selectedJobId;
+        const requestedJob = this.selectedJob;
+        const requestedTitle = requestedJob.title;
+        try {
+            const activeResume = resumeRecords.find((resume) => resume.isDefault && resume.status === 'ACTIVE');
+            const application = await submitJobApplication({
+                studentId: studentProfile.studentId,
+                studentUserId: studentProfile.studentUserId,
+                jobId: requestedJob.jobId,
+                companyId: requestedJob.companyId,
+                resumeId: activeResume?.resumeId
+            });
+            this.setApplied(requestedJobId);
+            this.notice = `已生成「${requestedTitle}」岗位申请单 ${application.applicationId}，状态：已提交。`;
+        } catch (error) {
+            this.notice = `岗位申请提交失败：${error.message || '请稍后重试'}`;
+        } finally {
+            this.submittingApplication = false;
+        }
     }
 
     closeNotice() {

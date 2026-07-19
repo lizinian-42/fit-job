@@ -5,3 +5,5 @@ web/node_modules/
 web/dist/
 web/.vite/
 web/*.tsbuildinfo
+platform/cangqiong/app-manifest.local.json
+platform/cangqiong/node_modules/

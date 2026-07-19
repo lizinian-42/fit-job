@@ -60,6 +60,7 @@ export const demoRoutes = [
 export const studentProfile = {
     studentId: 'STU-DEMO-001',
     studentUserId: 'USER-DEMO-STUDENT-001',
+    studentNo: 'STUDENT-NO-DEMO-001',
     displayName: '学生 A',
     avatarText: 'A',
     collegeCode: 'COLLEGE-DEMO-SE',
@@ -157,9 +158,15 @@ export const companies = [
         industry: '互联网/软件',
         companyScale: '100_499',
         city: '杭州',
+        reviewDepartmentCode: 'COLLEGE-DEMO-SE',
         description: '提供企业数字化协作产品的虚构演示企业。',
         hrOwnerUserId: 'USER-DEMO-HR-A',
-        reviewStatus: 'APPROVED'
+        reviewStatus: 'APPROVED',
+        currentNode: 'APPROVED',
+        currentHandlerRole: null,
+        currentHandlerId: null,
+        latestOpinion: '匿名演示企业已通过审核。',
+        approvalRecords: []
     },
     {
         companyId: 'COMPANY-DEMO-B',
@@ -168,9 +175,15 @@ export const companies = [
         industry: '人工智能',
         companyScale: '50_99',
         city: '上海',
+        reviewDepartmentCode: 'COLLEGE-DEMO-SE',
         description: '专注 AI 产品原型与数据服务的虚构演示企业。',
         hrOwnerUserId: 'USER-DEMO-HR-B',
-        reviewStatus: 'APPROVED'
+        reviewStatus: 'APPROVED',
+        currentNode: 'APPROVED',
+        currentHandlerRole: null,
+        currentHandlerId: null,
+        latestOpinion: '匿名演示企业已通过审核。',
+        approvalRecords: []
     },
     {
         companyId: 'COMPANY-DEMO-C',
@@ -179,9 +192,15 @@ export const companies = [
         industry: '数据服务',
         companyScale: '100_499',
         city: '杭州',
+        reviewDepartmentCode: 'COLLEGE-DEMO-SE',
         description: '提供可视化与数据治理服务的虚构演示企业。',
         hrOwnerUserId: 'USER-DEMO-HR-C',
-        reviewStatus: 'APPROVED'
+        reviewStatus: 'APPROVED',
+        currentNode: 'APPROVED',
+        currentHandlerRole: null,
+        currentHandlerId: null,
+        latestOpinion: '匿名演示企业已通过审核。',
+        approvalRecords: []
     },
     {
         companyId: 'COMPANY-DEMO-D',
@@ -190,9 +209,15 @@ export const companies = [
         industry: '企业服务',
         companyScale: '500_999',
         city: '南京',
+        reviewDepartmentCode: 'COLLEGE-DEMO-SE',
         description: '提供低代码实施服务的虚构演示企业。',
         hrOwnerUserId: 'USER-DEMO-HR-D',
-        reviewStatus: 'APPROVED'
+        reviewStatus: 'APPROVED',
+        currentNode: 'APPROVED',
+        currentHandlerRole: null,
+        currentHandlerId: null,
+        latestOpinion: '匿名演示企业已通过审核。',
+        approvalRecords: []
     },
     {
         companyId: 'COMPANY-DEMO-E',
@@ -201,9 +226,15 @@ export const companies = [
         industry: '软件开发',
         companyScale: '100_499',
         city: '苏州',
+        reviewDepartmentCode: 'COLLEGE-DEMO-SE',
         description: '提供 Java 企业应用研发的虚构演示企业。',
         hrOwnerUserId: 'USER-DEMO-HR-E',
-        reviewStatus: 'APPROVED'
+        reviewStatus: 'APPROVED',
+        currentNode: 'APPROVED',
+        currentHandlerRole: null,
+        currentHandlerId: null,
+        latestOpinion: '匿名演示企业已通过审核。',
+        approvalRecords: []
     }
 ];
 
@@ -212,10 +243,13 @@ export const jobPostings = [
         key: 'one',
         jobId: 'JOB-DEMO-FE-001',
         companyId: companies[0].companyId,
+        hrOwnerUserId: companies[0].hrOwnerUserId,
+        reviewDepartmentCode: companies[0].reviewDepartmentCode,
         title: '前端开发实习生',
         companyName: companies[0].companyName,
         jobType: 'INTERNSHIP',
         city: '杭州',
+        workMode: 'ONSITE',
         compensation: '180-220 元/天',
         attendance: '每周 3 天',
         salaryMin: 180,
@@ -227,6 +261,12 @@ export const jobPostings = [
         applicationDeadline: '2026-09-30',
         headcount: 3,
         publishStatus: 'PUBLISHED',
+        recommendationEnabled: true,
+        currentNode: 'PUBLISHED',
+        currentHandlerRole: 'COMPANY_HR',
+        currentHandlerId: companies[0].hrOwnerUserId,
+        latestOpinion: '匿名演示岗位已发布。',
+        approvalRecords: [],
         matchScore: 91,
         dimensions: [94, 88, 92, 90, 86, 84],
         reason: 'React、TypeScript 与数据可视化经历命中 JD 核心技能，项目交付证据与岗位成长路径匹配。',
@@ -238,10 +278,13 @@ export const jobPostings = [
         key: 'two',
         jobId: 'JOB-DEMO-PM-002',
         companyId: companies[1].companyId,
+        hrOwnerUserId: companies[1].hrOwnerUserId,
+        reviewDepartmentCode: companies[1].reviewDepartmentCode,
         title: 'AI 产品实习生',
         companyName: companies[1].companyName,
         jobType: 'INTERNSHIP',
         city: '上海',
+        workMode: 'HYBRID',
         compensation: '200-250 元/天',
         attendance: '可转正',
         salaryMin: 200,
@@ -253,6 +296,12 @@ export const jobPostings = [
         applicationDeadline: '2026-10-15',
         headcount: 2,
         publishStatus: 'PUBLISHED',
+        recommendationEnabled: true,
+        currentNode: 'PUBLISHED',
+        currentHandlerRole: 'COMPANY_HR',
+        currentHandlerId: companies[1].hrOwnerUserId,
+        latestOpinion: '匿名演示岗位已发布。',
+        approvalRecords: [],
         matchScore: 87,
         dimensions: [82, 86, 92, 88, 94, 78],
         reason: 'AI 产品原型、需求分析和技术背景形成互补，探索型项目经历与岗位动机匹配。',
@@ -264,10 +313,13 @@ export const jobPostings = [
         key: 'three',
         jobId: 'JOB-DEMO-DV-003',
         companyId: companies[2].companyId,
+        hrOwnerUserId: companies[2].hrOwnerUserId,
+        reviewDepartmentCode: companies[2].reviewDepartmentCode,
         title: '数据可视化实习生',
         companyName: companies[2].companyName,
         jobType: 'INTERNSHIP',
         city: '杭州',
+        workMode: 'REMOTE',
         compensation: '160-210 元/天',
         attendance: '远程友好',
         salaryMin: 160,
@@ -279,6 +331,12 @@ export const jobPostings = [
         applicationDeadline: '2026-09-20',
         headcount: 2,
         publishStatus: 'PUBLISHED',
+        recommendationEnabled: true,
+        currentNode: 'PUBLISHED',
+        currentHandlerRole: 'COMPANY_HR',
+        currentHandlerId: companies[2].hrOwnerUserId,
+        latestOpinion: '匿名演示岗位已发布。',
+        approvalRecords: [],
         matchScore: 84,
         dimensions: [86, 84, 88, 82, 80, 84],
         reason: '图表开发、就业驾驶舱和前端交互经历与岗位任务贴合。',
@@ -290,10 +348,13 @@ export const jobPostings = [
         key: 'four',
         jobId: 'JOB-DEMO-LC-004',
         companyId: companies[3].companyId,
+        hrOwnerUserId: companies[3].hrOwnerUserId,
+        reviewDepartmentCode: companies[3].reviewDepartmentCode,
         title: '低代码实施顾问实习生',
         companyName: companies[3].companyName,
         jobType: 'INTERNSHIP',
         city: '南京',
+        workMode: 'ONSITE',
         compensation: '150-180 元/天',
         attendance: '项目制',
         salaryMin: 150,
@@ -305,6 +366,12 @@ export const jobPostings = [
         applicationDeadline: '2026-10-31',
         headcount: 4,
         publishStatus: 'PUBLISHED',
+        recommendationEnabled: true,
+        currentNode: 'PUBLISHED',
+        currentHandlerRole: 'COMPANY_HR',
+        currentHandlerId: companies[3].hrOwnerUserId,
+        latestOpinion: '匿名演示岗位已发布。',
+        approvalRecords: [],
         matchScore: 82,
         dimensions: [78, 80, 86, 88, 84, 76],
         reason: '苍穹低代码项目经历与平台配置意识加分，适合参与表单、流程和权限模型落地。',
@@ -316,10 +383,13 @@ export const jobPostings = [
         key: 'five',
         jobId: 'JOB-DEMO-JAVA-005',
         companyId: companies[4].companyId,
+        hrOwnerUserId: companies[4].hrOwnerUserId,
+        reviewDepartmentCode: companies[4].reviewDepartmentCode,
         title: 'Java 后端开发实习生',
         companyName: companies[4].companyName,
         jobType: 'INTERNSHIP',
         city: '苏州',
+        workMode: 'ONSITE',
         compensation: '170-220 元/天',
         attendance: 'Java 17',
         salaryMin: 170,
@@ -331,6 +401,12 @@ export const jobPostings = [
         applicationDeadline: '2026-11-15',
         headcount: 3,
         publishStatus: 'PUBLISHED',
+        recommendationEnabled: true,
+        currentNode: 'PUBLISHED',
+        currentHandlerRole: 'COMPANY_HR',
+        currentHandlerId: companies[4].hrOwnerUserId,
+        latestOpinion: '匿名演示岗位已发布。',
+        approvalRecords: [],
         matchScore: 76,
         dimensions: [70, 74, 72, 82, 78, 62],
         reason: '具备 TypeScript 与部分 Java 基础，在 AI 网关或匹配服务方向仍有成长空间。',
@@ -369,6 +445,7 @@ export const resumeRecords = [
     {
         resumeId: 'RESUME-DEMO-001',
         studentId: studentProfile.studentId,
+        studentUserId: studentProfile.studentUserId,
         versionNo: 3,
         versionName: '前端开发简历 V3',
         targetJobId: jobPostings[0].jobId,
@@ -384,6 +461,7 @@ export const resumeRecords = [
     {
         resumeId: 'RESUME-DEMO-002',
         studentId: studentProfile.studentId,
+        studentUserId: studentProfile.studentUserId,
         versionNo: 2,
         versionName: '通用求职简历 V2',
         targetJobId: null,
@@ -401,6 +479,8 @@ export const resumeRecords = [
 export const jobApplications = [
     {
         applicationId: 'JOB-APP-DEMO-001',
+        createCommandId: 'CMD-DEMO-JOB-SUBMIT-001',
+        activeApplicationKey: `${studentProfile.studentId}:${jobPostings[0].jobId}`,
         studentId: studentProfile.studentId,
         studentUserId: studentProfile.studentUserId,
         jobId: jobPostings[0].jobId,
@@ -408,11 +488,11 @@ export const jobApplications = [
         resumeId: resumeRecords[0].resumeId,
         source: 'RECOMMENDATION',
         status: 'SUBMITTED',
-        currentNode: 'COUNSELOR_REVIEW',
+        currentNode: 'SUBMITTED',
         currentHandlerRole: 'COUNSELOR',
         currentHandlerId: studentProfile.counselorUserId,
         submittedAt: '2026-07-19T11:00:00+08:00',
-        updatedAt: '2026-07-19T11:00:00+08:00',
+        modifiedAt: '2026-07-19T11:00:00+08:00',
         approvalRecords: [
             {
                 recordId: 'APPROVAL-DEMO-JOB-001',
@@ -430,6 +510,8 @@ export const jobApplications = [
     },
     {
         applicationId: 'JOB-APP-DEMO-002',
+        createCommandId: 'CMD-DEMO-JOB-SUBMIT-002',
+        activeApplicationKey: `${studentProfile.studentId}:${jobPostings[1].jobId}`,
         studentId: studentProfile.studentId,
         studentUserId: studentProfile.studentUserId,
         jobId: jobPostings[1].jobId,
@@ -443,7 +525,7 @@ export const jobApplications = [
         latestOpinion: '企业发出演示录用意向。',
         submittedAt: '2026-07-15T10:00:00+08:00',
         completedAt: '2026-07-18T16:00:00+08:00',
-        updatedAt: '2026-07-18T16:00:00+08:00',
+        modifiedAt: '2026-07-18T16:00:00+08:00',
         approvalRecords: [
             {
                 recordId: 'APPROVAL-DEMO-JOB-002-1',
@@ -505,7 +587,7 @@ export const internshipApplications = [
         currentHandlerId: 'USER-DEMO-DEPARTMENT-ADMIN-001',
         latestOpinion: '材料完整，同意提交院系复核。',
         submittedAt: '2026-07-19T12:00:00+08:00',
-        updatedAt: '2026-07-19T13:00:00+08:00',
+        modifiedAt: '2026-07-19T13:00:00+08:00',
         approvalRecords: [
             {
                 recordId: 'APPROVAL-DEMO-INTERN-001',
@@ -525,13 +607,181 @@ export const internshipApplications = [
                 nodeCode: 'COUNSELOR_REVIEW',
                 actorRole: 'COUNSELOR',
                 actorId: studentProfile.counselorUserId,
-                action: 'APPROVE',
+                action: 'COUNSELOR_APPROVE',
                 opinion: '材料完整，同意提交院系复核。',
                 fromStatus: 'COUNSELOR_REVIEW',
                 toStatus: 'DEPARTMENT_REVIEW',
                 operatedAt: '2026-07-19T13:00:00+08:00'
             }
         ]
+    }
+];
+
+export const internshipLogs = [
+    {
+        logId: 'INTERN-LOG-DEMO-001',
+        internshipApplicationId: internshipApplications[0].internshipApplicationId,
+        studentId: studentProfile.studentId,
+        studentUserId: studentProfile.studentUserId,
+        companyId: internshipApplications[0].companyId,
+        logDate: '2026-09-07',
+        hours: 7.5,
+        workContent: '完成产品需求梳理和首版交互原型。',
+        learningSummary: '学习了用验收标准拆解 AI 产品需求的方法。',
+        problems: '需要进一步确认指标口径与数据权限。',
+        riskLevel: 'LOW',
+        attachments: [],
+        status: 'SUBMITTED',
+        counselorComment: null
+    }
+];
+
+export const tripartiteReviews = [
+    {
+        reviewId: 'REVIEW-DEMO-001',
+        internshipApplicationId: internshipApplications[0].internshipApplicationId,
+        studentId: studentProfile.studentId,
+        studentUserId: studentProfile.studentUserId,
+        companyId: internshipApplications[0].companyId,
+        reviewPeriod: '2026 年秋季实习中期',
+        studentSelfScore: 86,
+        studentComment: '能够按周交付原型和复盘记录，仍需加强数据分析证据。',
+        companyScore: 88,
+        companyComment: '学习主动，沟通清晰，能快速迭代原型。',
+        companyEvaluatorId: companies[1].hrOwnerUserId,
+        counselorScore: null,
+        counselorComment: null,
+        counselorEvaluatorId: null,
+        finalScore: null,
+        conclusion: null,
+        status: 'COLLECTING'
+    }
+];
+
+export const employmentDestinations = [
+    {
+        destinationId: 'DESTINATION-DEMO-001',
+        studentId: studentProfile.studentId,
+        studentUserId: studentProfile.studentUserId,
+        destinationType: 'EMPLOYMENT',
+        companyId: companies[1].companyId,
+        companyName: companies[1].companyName,
+        jobTitle: jobPostings[1].title,
+        industry: companies[1].industry,
+        city: jobPostings[1].city,
+        salaryRange: '5K_8K',
+        contractType: 'OFFER',
+        startDate: '2027-07-01',
+        proofAttachment: null,
+        verificationStatus: 'DRAFT',
+        verifierId: null,
+        verificationOpinion: null
+    }
+];
+
+export const policyEntries = [
+    {
+        policyId: 'MOCK-POLICY-004',
+        ownerDepartmentCode: studentProfile.collegeCode,
+        title: '模拟政策：基层就业补贴条目 04',
+        regionCode: 'REGION-DEMO',
+        regionName: '示例地区',
+        audienceTags: ['高校毕业生', '基层就业'],
+        keywords: ['基层就业', '补贴', '社保'],
+        summary: '用于演示基层就业补贴的单位、社保和材料条件。',
+        content: '本条目为匿名模拟政策内容，不代表真实补贴标准。',
+        sourceUrl: 'https://example.com/mock-policy/004',
+        issuer: '示例地区就业服务机构',
+        publishedAt: '2026-01-05',
+        effectiveFrom: '2026-01-05',
+        effectiveTo: '2026-12-31',
+        status: 'PUBLISHED',
+        knowledgeBaseId: 'KB-DEMO-POLICY',
+        vectorSyncStatus: 'SYNCED'
+    },
+    {
+        policyId: 'MOCK-POLICY-012',
+        ownerDepartmentCode: studentProfile.collegeCode,
+        title: '模拟政策：高校毕业生就业服务条目 12',
+        regionCode: 'REGION-DEMO',
+        regionName: '示例地区',
+        audienceTags: ['高校毕业生', '基层就业'],
+        keywords: ['基层就业', '补贴', '申请材料'],
+        summary: '用于演示毕业年度、单位类型、社保记录和地区条件判断。',
+        content: '本条目为匿名模拟政策内容，不代表真实申报条件。',
+        sourceUrl: 'https://example.com/mock-policy/012',
+        issuer: '示例地区就业服务机构',
+        publishedAt: '2026-01-10',
+        effectiveFrom: '2026-01-10',
+        effectiveTo: '2026-12-31',
+        status: 'PUBLISHED',
+        knowledgeBaseId: 'KB-DEMO-POLICY',
+        vectorSyncStatus: 'SYNCED'
+    },
+    {
+        policyId: 'MOCK-POLICY-007',
+        ownerDepartmentCode: studentProfile.collegeCode,
+        title: '模拟政策：就业协议说明 07',
+        regionCode: 'REGION-DEMO',
+        regionName: '示例地区',
+        audienceTags: ['高校毕业生', '实习学生'],
+        keywords: ['实习协议', '三方协议'],
+        summary: '用于演示实习协议与就业协议的差异说明。',
+        content: '本条目为匿名模拟政策内容，不构成法律或办理建议。',
+        sourceUrl: 'https://example.com/mock-policy/007',
+        issuer: '示例地区就业服务机构',
+        publishedAt: '2026-02-01',
+        effectiveFrom: '2026-02-01',
+        effectiveTo: '2027-01-31',
+        status: 'PUBLISHED',
+        knowledgeBaseId: 'KB-DEMO-POLICY',
+        vectorSyncStatus: 'SYNCED'
+    },
+    {
+        policyId: 'MOCK-POLICY-018',
+        ownerDepartmentCode: studentProfile.collegeCode,
+        title: '模拟政策：灵活就业登记 18',
+        regionCode: 'REGION-DEMO',
+        regionName: '示例地区',
+        audienceTags: ['高校毕业生', '灵活就业'],
+        keywords: ['灵活就业', '证明材料'],
+        summary: '用于演示灵活就业登记材料清单和人工复核。',
+        content: '本条目为匿名模拟政策内容，实际办理应查询所在地官方渠道。',
+        sourceUrl: 'https://example.com/mock-policy/018',
+        issuer: '示例地区就业服务机构',
+        publishedAt: '2026-03-01',
+        effectiveFrom: '2026-03-01',
+        effectiveTo: '2027-02-28',
+        status: 'PUBLISHED',
+        knowledgeBaseId: 'KB-DEMO-POLICY',
+        vectorSyncStatus: 'SYNCED'
+    }
+];
+
+export const aiCallLogs = [
+    {
+        callId: 'AI-CALL-DEMO-001',
+        studentId: studentProfile.studentId,
+        studentUserId: studentProfile.studentUserId,
+        businessType: 'RESUME_DIAGNOSIS',
+        businessId: resumeRecords[0].resumeId,
+        agentCode: 'fit_resume_diagnosis_agent',
+        modelCode: 'MOCK-MODEL',
+        requestHash: 'MOCK-SHA256-RESUME-DEMO-001',
+        inputSummary: '匿名学生简历版本与目标岗位关键词摘要。',
+        outputSummary: '命中 React、TypeScript；建议补充性能优化和单元测试证据。',
+        resultJson: { reportId: resumeDiagnosis.reportId, score: resumeDiagnosis.score },
+        status: 'SUCCEEDED',
+        latencyMs: 860,
+        inputTokens: 620,
+        outputTokens: 310,
+        errorCode: null,
+        errorMessage: null,
+        traceId: 'TRACE-DEMO-001',
+        operatorUserId: studentProfile.studentUserId,
+        calledAt: '2026-07-19T10:30:00+08:00',
+        verifiedBy: studentProfile.counselorUserId,
+        verifiedAt: '2026-07-19T10:45:00+08:00'
     }
 ];
 
@@ -707,9 +957,9 @@ export const demoStory = [
 ];
 
 export const mockDataContract = {
-    contractVersion: 'm1.1',
+    contractVersion: 'm2.0',
     privacyLevel: 'ANONYMOUS_DEMO_ONLY',
-    generatedAt: '2026-07-19T19:00:00+08:00',
+    generatedAt: '2026-07-19T14:00:00+08:00',
     dtoReferences: {
         studentProfile: 'StudentProfileDTO',
         company: 'CompanyDTO',
@@ -718,21 +968,34 @@ export const mockDataContract = {
         resumeDiagnosis: 'ResumeDiagnosisReportDTO',
         jobApplication: 'JobApplicationDTO',
         internshipApplication: 'InternshipApplicationDTO',
+        internshipLog: 'InternshipLogDTO',
+        tripartiteReview: 'TripartiteReviewDTO',
+        employmentDestination: 'EmploymentDestinationDTO',
+        policy: 'PolicyDTO',
+        aiCallLog: 'AiCallLogDTO',
         interviewSession: 'InterviewSessionDTO',
         interviewReport: 'InterviewReportDTO',
         dashboardSnapshot: 'EmploymentDashboardDTO',
         policyAnswer: 'PolicyAnswerDTO'
     },
     formReferences: {
-        student: '学生档案 / 成长任务表单',
-        resume: '简历版本 / 诊断报告表单',
-        company: '企业档案表单',
-        jobs: '岗位库表单',
-        jobApplication: '岗位申请 / 审批记录表单',
-        internshipApplication: '实习申请 / 审批记录表单',
+        student: 'fit_student_profile',
+        resume: 'fit_resume',
+        company: 'fit_company',
+        jobs: 'fit_job',
+        jobApplication: 'fit_job_application',
+        internshipApplication: 'fit_internship_application',
+        internshipLog: 'fit_internship_log',
+        tripartiteReview: 'fit_tripartite_review',
+        employmentDestination: 'fit_employment_destination',
         interview: '面试场次 / 面试报告表单',
         dashboard: '就业指标快照 / 风险跟进表单',
-        policy: '政策知识条目 / 问答记录表单'
+        policy: 'fit_policy',
+        aiCallLog: 'fit_ai_call_log'
+    },
+    workflowReferences: {
+        jobApplication: 'fit_job_application_flow',
+        internshipApplication: 'fit_internship_approval'
     }
 };
 

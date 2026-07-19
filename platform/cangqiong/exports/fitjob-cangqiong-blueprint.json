@@ -1,0 +1,5973 @@
+{
+  "modelCatalog": {
+    "schemaVersion": "2.0.0",
+    "appCode": "fitjob",
+    "platform": "Kingdee AI Cangqiong low-code blueprint",
+    "roles": [
+      "STUDENT",
+      "COUNSELOR",
+      "COMPANY_HR",
+      "DEPARTMENT_ADMIN"
+    ],
+    "javaTypeMap": {
+      "long": "Long",
+      "integer": "Integer",
+      "decimal": "BigDecimal",
+      "boolean": "Boolean",
+      "text": "String",
+      "long_text": "String",
+      "rich_text": "String",
+      "multi_text": "List<String>",
+      "json": "JsonNode",
+      "date": "LocalDate",
+      "datetime": "OffsetDateTime",
+      "user": "String",
+      "organization": "String",
+      "reference": "String",
+      "enum": "String",
+      "phone": "String",
+      "email": "String",
+      "url": "String",
+      "attachment": "String",
+      "multi_attachment": "List<String>"
+    },
+    "serviceBindings": [
+      {
+        "code": "fit_resume_diagnose",
+        "label": "简历诊断",
+        "inputs": [
+          "fit_student_profile.studentId",
+          "fit_resume.resumeId",
+          "fit_job.jobId"
+        ],
+        "writes": [
+          "fit_resume.diagnosisStatus",
+          "fit_resume.diagnosisReportId",
+          "fit_resume.diagnosisScore",
+          "fit_ai_call_log.callId"
+        ]
+      },
+      {
+        "code": "fit_job_match_service",
+        "label": "岗位匹配与推荐",
+        "inputs": [
+          "fit_student_profile.studentId",
+          "fit_resume.resumeId",
+          "fit_job.jobId"
+        ],
+        "filter": "fit_job.publishStatus == PUBLISHED && fit_job.recommendationEnabled == true",
+        "writes": [
+          "fit_ai_call_log.callId"
+        ]
+      },
+      {
+        "code": "fit_job_apply",
+        "label": "一键申请",
+        "inputs": [
+          "fit_student_profile.studentId",
+          "fit_resume.resumeId",
+          "fit_job.jobId"
+        ],
+        "workflow": "fit_job_application_flow",
+        "creates": "fit_job_application"
+      }
+    ],
+    "models": [
+      {
+        "code": "fit_student_profile",
+        "name": "学生档案",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "studentId",
+        "ownerField": "studentUserId",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_student_profile_list",
+          "formPage": "fit_student_profile_form",
+          "supportedModes": [
+            "CREATE",
+            "EDIT",
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "profileStatus",
+          "initial": "DRAFT",
+          "values": [
+            "DRAFT",
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "studentId",
+            "label": "学生档案编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 32,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedStudentBinding.studentId"
+          },
+          {
+            "code": "studentUserId",
+            "label": "关联学生用户",
+            "type": "user",
+            "required": true,
+            "unique": true,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedStudentBinding.studentUserId"
+          },
+          {
+            "code": "displayName",
+            "label": "姓名",
+            "type": "text",
+            "required": true,
+            "length": 64
+          },
+          {
+            "code": "studentNo",
+            "label": "学号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 32,
+            "sensitivity": "PERSONAL",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedStudentBinding.studentNo"
+          },
+          {
+            "code": "gender",
+            "label": "性别",
+            "type": "enum",
+            "required": false,
+            "enum": [
+              "UNSPECIFIED",
+              "FEMALE",
+              "MALE"
+            ],
+            "default": "UNSPECIFIED"
+          },
+          {
+            "code": "mobile",
+            "label": "手机号",
+            "type": "phone",
+            "required": false,
+            "sensitivity": "SENSITIVE",
+            "masked": true
+          },
+          {
+            "code": "email",
+            "label": "邮箱",
+            "type": "email",
+            "required": false,
+            "sensitivity": "SENSITIVE",
+            "masked": true
+          },
+          {
+            "code": "collegeCode",
+            "label": "院系",
+            "type": "organization",
+            "required": true,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedStudentBinding.collegeCode"
+          },
+          {
+            "code": "collegeName",
+            "label": "院系名称",
+            "type": "text",
+            "required": true,
+            "length": 128,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedStudentBinding.collegeName"
+          },
+          {
+            "code": "majorName",
+            "label": "专业",
+            "type": "text",
+            "required": true,
+            "length": 128,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedStudentBinding.majorName"
+          },
+          {
+            "code": "classCode",
+            "label": "班级",
+            "type": "text",
+            "required": true,
+            "length": 64,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedStudentBinding.classCode"
+          },
+          {
+            "code": "counselorUserId",
+            "label": "辅导员",
+            "type": "user",
+            "required": true,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedStudentBinding.counselorUserId"
+          },
+          {
+            "code": "graduationYear",
+            "label": "毕业年份",
+            "type": "integer",
+            "required": true,
+            "min": 2020,
+            "max": 2100,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedStudentBinding.graduationYear"
+          },
+          {
+            "code": "profileStatus",
+            "label": "档案状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DRAFT",
+              "ACTIVE",
+              "ARCHIVED"
+            ],
+            "default": "DRAFT",
+            "readonly": true
+          },
+          {
+            "code": "employmentStatus",
+            "label": "就业状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "NOT_STARTED",
+              "ACTIVE_SEARCH",
+              "INTERNSHIP",
+              "EMPLOYED",
+              "OTHER"
+            ],
+            "default": "NOT_STARTED"
+          },
+          {
+            "code": "targetRoles",
+            "label": "目标岗位",
+            "type": "multi_text",
+            "required": true,
+            "maxItems": 5
+          },
+          {
+            "code": "preferredCities",
+            "label": "意向城市",
+            "type": "multi_text",
+            "required": true,
+            "maxItems": 10
+          },
+          {
+            "code": "expectedSalaryMin",
+            "label": "期望薪资下限",
+            "type": "decimal",
+            "required": false,
+            "min": 0,
+            "precision": 2
+          },
+          {
+            "code": "expectedSalaryMax",
+            "label": "期望薪资上限",
+            "type": "decimal",
+            "required": false,
+            "min": 0,
+            "precision": 2
+          },
+          {
+            "code": "availableFrom",
+            "label": "可到岗日期",
+            "type": "date",
+            "required": false
+          },
+          {
+            "code": "weeklyAttendanceDays",
+            "label": "每周可实习天数",
+            "type": "integer",
+            "required": false,
+            "min": 1,
+            "max": 7
+          },
+          {
+            "code": "skillTags",
+            "label": "技能标签",
+            "type": "multi_text",
+            "required": false,
+            "maxItems": 30
+          },
+          {
+            "code": "profileCompletion",
+            "label": "档案完整度",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "code": "readinessScore",
+            "label": "求职准备度",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [
+          {
+            "code": "educationBackground",
+            "name": "教育背景",
+            "minRows": 1,
+            "fields": [
+              {
+                "code": "educationId",
+                "label": "教育经历编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true
+              },
+              {
+                "code": "schoolName",
+                "label": "学校",
+                "type": "text",
+                "required": true,
+                "length": 128
+              },
+              {
+                "code": "collegeName",
+                "label": "院系",
+                "type": "text",
+                "required": true,
+                "length": 128
+              },
+              {
+                "code": "majorName",
+                "label": "专业",
+                "type": "text",
+                "required": true,
+                "length": 128
+              },
+              {
+                "code": "degree",
+                "label": "学历",
+                "type": "enum",
+                "required": true,
+                "enum": [
+                  "ASSOCIATE",
+                  "BACHELOR",
+                  "MASTER",
+                  "DOCTOR"
+                ]
+              },
+              {
+                "code": "startDate",
+                "label": "开始日期",
+                "type": "date",
+                "required": true
+              },
+              {
+                "code": "endDate",
+                "label": "结束日期",
+                "type": "date",
+                "required": true
+              },
+              {
+                "code": "gpa",
+                "label": "GPA",
+                "type": "decimal",
+                "required": false,
+                "min": 0,
+                "max": 5,
+                "precision": 2
+              },
+              {
+                "code": "rankPercent",
+                "label": "专业排名百分位",
+                "type": "integer",
+                "required": false,
+                "min": 1,
+                "max": 100
+              }
+            ]
+          },
+          {
+            "code": "certificates",
+            "name": "技能证书",
+            "fields": [
+              {
+                "code": "certificateId",
+                "label": "证书编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true
+              },
+              {
+                "code": "certificateName",
+                "label": "证书名称",
+                "type": "text",
+                "required": true,
+                "length": 128
+              },
+              {
+                "code": "issuer",
+                "label": "颁发机构",
+                "type": "text",
+                "required": true,
+                "length": 128
+              },
+              {
+                "code": "obtainedAt",
+                "label": "取得日期",
+                "type": "date",
+                "required": true
+              },
+              {
+                "code": "credentialNo",
+                "label": "凭证编号",
+                "type": "text",
+                "required": false,
+                "length": 128,
+                "sensitivity": "PERSONAL"
+              },
+              {
+                "code": "attachment",
+                "label": "证明附件",
+                "type": "attachment",
+                "required": false
+              }
+            ]
+          },
+          {
+            "code": "experiences",
+            "name": "项目与实习经历",
+            "fields": [
+              {
+                "code": "experienceId",
+                "label": "经历编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true
+              },
+              {
+                "code": "type",
+                "label": "经历类型",
+                "type": "enum",
+                "required": true,
+                "enum": [
+                  "PROJECT",
+                  "INTERNSHIP",
+                  "COMPETITION",
+                  "CAMPUS"
+                ]
+              },
+              {
+                "code": "name",
+                "label": "经历名称",
+                "type": "text",
+                "required": true,
+                "length": 128
+              },
+              {
+                "code": "organizationName",
+                "label": "组织/企业",
+                "type": "text",
+                "required": true,
+                "length": 128
+              },
+              {
+                "code": "role",
+                "label": "担任角色",
+                "type": "text",
+                "required": true,
+                "length": 128
+              },
+              {
+                "code": "startDate",
+                "label": "开始日期",
+                "type": "date",
+                "required": true
+              },
+              {
+                "code": "endDate",
+                "label": "结束日期",
+                "type": "date",
+                "required": false
+              },
+              {
+                "code": "description",
+                "label": "经历描述",
+                "type": "long_text",
+                "required": true,
+                "maxLength": 4000
+              },
+              {
+                "code": "achievements",
+                "label": "成果与量化证据",
+                "type": "long_text",
+                "required": false,
+                "maxLength": 4000
+              },
+              {
+                "code": "skillTags",
+                "label": "使用技能",
+                "type": "multi_text",
+                "required": false,
+                "maxItems": 20
+              }
+            ]
+          }
+        ],
+        "relationships": [
+          {
+            "field": "studentUserId",
+            "target": "platform_user",
+            "cardinality": "many-to-one"
+          },
+          {
+            "field": "collegeCode",
+            "target": "platform_organization",
+            "cardinality": "many-to-one"
+          },
+          {
+            "field": "counselorUserId",
+            "target": "platform_user",
+            "cardinality": "many-to-one"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "studentId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "studentUserId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "collegeCode",
+              "classCode",
+              "graduationYear"
+            ]
+          }
+        ],
+        "constraints": [
+          {
+            "code": "student_profile_identity_consistency",
+            "type": "service_invariant",
+            "source": "authorizedStudentBinding",
+            "fieldMatches": {
+              "studentId": "studentId",
+              "studentUserId": "studentUserId",
+              "studentNo": "studentNo",
+              "collegeCode": "collegeCode",
+              "collegeName": "collegeName",
+              "majorName": "majorName",
+              "classCode": "classCode",
+              "counselorUserId": "counselorUserId",
+              "graduationYear": "graduationYear"
+            },
+            "rule": "学生身份、学籍、院系、班级和辅导员必须由服务端根据获授权的学生组织绑定写入，学生自建时必须绑定 currentUser.id，禁止客户端覆盖或改变数据范围与审批路由"
+          }
+        ]
+      },
+      {
+        "code": "fit_resume",
+        "name": "简历档案",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "resumeId",
+        "ownerField": "studentUserId",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_resume_list",
+          "formPage": "fit_resume_form",
+          "supportedModes": [
+            "CREATE",
+            "EDIT",
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "status",
+          "initial": "DRAFT",
+          "values": [
+            "DRAFT",
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "resumeId",
+            "label": "简历编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 32
+          },
+          {
+            "code": "studentId",
+            "label": "学生档案",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_student_profile.studentId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "currentUser.studentProfile.studentId"
+          },
+          {
+            "code": "studentUserId",
+            "label": "学生用户",
+            "type": "user",
+            "required": true,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "currentUser.id"
+          },
+          {
+            "code": "versionNo",
+            "label": "版本号",
+            "type": "integer",
+            "required": true,
+            "min": 1
+          },
+          {
+            "code": "versionName",
+            "label": "版本名称",
+            "type": "text",
+            "required": true,
+            "length": 128
+          },
+          {
+            "code": "targetJobId",
+            "label": "目标岗位",
+            "type": "reference",
+            "required": false,
+            "reference": "fit_job.jobId"
+          },
+          {
+            "code": "sourceFile",
+            "label": "原始简历",
+            "type": "attachment",
+            "required": false
+          },
+          {
+            "code": "summary",
+            "label": "个人摘要",
+            "type": "long_text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "code": "contentText",
+            "label": "简历全文",
+            "type": "long_text",
+            "required": false,
+            "maxLength": 30000,
+            "sensitivity": "PERSONAL"
+          },
+          {
+            "code": "structuredContent",
+            "label": "结构化简历",
+            "type": "json",
+            "required": false,
+            "sensitivity": "PERSONAL"
+          },
+          {
+            "code": "skillTags",
+            "label": "技能标签",
+            "type": "multi_text",
+            "required": false,
+            "maxItems": 30
+          },
+          {
+            "code": "isDefault",
+            "label": "默认简历",
+            "type": "boolean",
+            "required": true,
+            "default": false
+          },
+          {
+            "code": "status",
+            "label": "版本状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DRAFT",
+              "ACTIVE",
+              "ARCHIVED"
+            ],
+            "default": "DRAFT",
+            "readonly": true
+          },
+          {
+            "code": "diagnosisStatus",
+            "label": "诊断状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "NOT_RUN",
+              "QUEUED",
+              "RUNNING",
+              "SUCCEEDED",
+              "FAILED"
+            ],
+            "default": "NOT_RUN",
+            "readonly": true
+          },
+          {
+            "code": "diagnosisReportId",
+            "label": "诊断报告编号",
+            "type": "text",
+            "required": false,
+            "readonly": true,
+            "length": 64
+          },
+          {
+            "code": "diagnosisScore",
+            "label": "诊断分数",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [],
+        "relationships": [
+          {
+            "field": "studentId",
+            "target": "fit_student_profile",
+            "targetField": "studentId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "targetJobId",
+            "target": "fit_job",
+            "targetField": "jobId",
+            "cardinality": "many-to-one",
+            "onDelete": "set-null"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "resumeId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "studentId",
+              "versionNo"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "studentId",
+              "isDefault"
+            ]
+          }
+        ],
+        "constraints": [
+          {
+            "code": "resume_student_identity_consistency",
+            "type": "service_invariant",
+            "source": "fit_student_profile",
+            "fieldMatches": {
+              "studentId": "studentId",
+              "studentUserId": "studentUserId"
+            },
+            "rule": "studentId/studentUserId 必须由服务端从当前登录学生的档案派生且同时匹配同一 fit_student_profile，禁止客户端跨学生引用"
+          }
+        ]
+      },
+      {
+        "code": "fit_company",
+        "name": "企业信息",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "companyId",
+        "ownerField": "hrOwnerUserId",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_company_list",
+          "formPage": "fit_company_form",
+          "supportedModes": [
+            "CREATE",
+            "EDIT",
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "reviewStatus",
+          "initial": "DRAFT",
+          "values": [
+            "DRAFT",
+            "PENDING_REVIEW",
+            "APPROVED",
+            "REJECTED",
+            "DISABLED"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "companyId",
+            "label": "企业编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 32,
+            "readonly": true,
+            "serverGenerated": true
+          },
+          {
+            "code": "companyCode",
+            "label": "企业统一编码",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 64
+          },
+          {
+            "code": "companyName",
+            "label": "企业名称",
+            "type": "text",
+            "required": true,
+            "length": 256
+          },
+          {
+            "code": "industry",
+            "label": "所属行业",
+            "type": "text",
+            "required": true,
+            "length": 128
+          },
+          {
+            "code": "companyScale",
+            "label": "企业规模",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "LT_50",
+              "50_99",
+              "100_499",
+              "500_999",
+              "GE_1000"
+            ]
+          },
+          {
+            "code": "companyNature",
+            "label": "企业性质",
+            "type": "enum",
+            "required": false,
+            "enum": [
+              "PRIVATE",
+              "STATE_OWNED",
+              "FOREIGN",
+              "JOINT_VENTURE",
+              "OTHER"
+            ]
+          },
+          {
+            "code": "city",
+            "label": "所在城市",
+            "type": "text",
+            "required": true,
+            "length": 64
+          },
+          {
+            "code": "reviewDepartmentCode",
+            "label": "归口审核院系",
+            "type": "organization",
+            "required": true,
+            "readonly": true,
+            "serverDerived": "currentUser.departmentCode"
+          },
+          {
+            "code": "address",
+            "label": "详细地址",
+            "type": "text",
+            "required": false,
+            "length": 256
+          },
+          {
+            "code": "website",
+            "label": "企业网站",
+            "type": "url",
+            "required": false
+          },
+          {
+            "code": "description",
+            "label": "企业简介",
+            "type": "long_text",
+            "required": true,
+            "maxLength": 5000
+          },
+          {
+            "code": "hrOwnerUserId",
+            "label": "企业 HR 负责人",
+            "type": "user",
+            "required": true,
+            "readonly": true,
+            "serverDerived": "currentUser.id"
+          },
+          {
+            "code": "contactName",
+            "label": "联系人",
+            "type": "text",
+            "required": false,
+            "length": 64,
+            "sensitivity": "BUSINESS_CONTACT"
+          },
+          {
+            "code": "contactPhone",
+            "label": "联系电话",
+            "type": "phone",
+            "required": false,
+            "sensitivity": "BUSINESS_CONTACT",
+            "masked": true
+          },
+          {
+            "code": "contactEmail",
+            "label": "联系邮箱",
+            "type": "email",
+            "required": false,
+            "sensitivity": "BUSINESS_CONTACT",
+            "masked": true
+          },
+          {
+            "code": "reviewStatus",
+            "label": "审核状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DRAFT",
+              "PENDING_REVIEW",
+              "APPROVED",
+              "REJECTED",
+              "DISABLED"
+            ],
+            "default": "DRAFT",
+            "readonly": true
+          },
+          {
+            "code": "currentNode",
+            "label": "当前节点",
+            "type": "text",
+            "required": true,
+            "readonly": true
+          },
+          {
+            "code": "currentHandlerRole",
+            "label": "当前处理角色",
+            "type": "enum",
+            "required": false,
+            "readonly": true,
+            "enum": [
+              "STUDENT",
+              "COUNSELOR",
+              "COMPANY_HR",
+              "DEPARTMENT_ADMIN"
+            ]
+          },
+          {
+            "code": "currentHandlerId",
+            "label": "当前处理人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "latestOpinion",
+            "label": "最近审批意见",
+            "type": "long_text",
+            "required": false,
+            "readonly": true,
+            "maxLength": 2000
+          },
+          {
+            "code": "reviewOpinion",
+            "label": "审核意见",
+            "type": "long_text",
+            "required": false,
+            "readonly": true,
+            "maxLength": 2000
+          },
+          {
+            "code": "reviewedBy",
+            "label": "审核人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "reviewedAt",
+            "label": "审核时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [
+          {
+            "code": "approvalRecords",
+            "name": "审批记录",
+            "readonly": true,
+            "fields": [
+              {
+                "code": "recordId",
+                "label": "记录编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true
+              },
+              {
+                "code": "commandId",
+                "label": "幂等命令编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true,
+                "length": 128
+              },
+              {
+                "code": "nodeCode",
+                "label": "节点编码",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "actorRole",
+                "label": "处理角色",
+                "type": "enum",
+                "required": true,
+                "enum": [
+                  "STUDENT",
+                  "COUNSELOR",
+                  "COMPANY_HR",
+                  "DEPARTMENT_ADMIN"
+                ]
+              },
+              {
+                "code": "actorId",
+                "label": "处理人",
+                "type": "user",
+                "required": true
+              },
+              {
+                "code": "action",
+                "label": "处理动作",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "opinion",
+                "label": "审批意见",
+                "type": "long_text",
+                "required": false,
+                "maxLength": 2000
+              },
+              {
+                "code": "fromStatus",
+                "label": "原状态",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "toStatus",
+                "label": "新状态",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "operatedAt",
+                "label": "处理时间",
+                "type": "datetime",
+                "required": true
+              }
+            ]
+          }
+        ],
+        "relationships": [
+          {
+            "field": "hrOwnerUserId",
+            "target": "platform_user",
+            "cardinality": "many-to-one"
+          },
+          {
+            "field": "reviewDepartmentCode",
+            "target": "platform_organization",
+            "cardinality": "many-to-one"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "companyId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "companyCode"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "hrOwnerUserId"
+            ]
+          }
+        ],
+        "constraints": []
+      },
+      {
+        "code": "fit_job",
+        "name": "岗位信息",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "jobId",
+        "ownerField": "hrOwnerUserId",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_job_list",
+          "formPage": "fit_job_form",
+          "supportedModes": [
+            "CREATE",
+            "EDIT",
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "publishStatus",
+          "initial": "DRAFT",
+          "values": [
+            "DRAFT",
+            "PENDING_REVIEW",
+            "PUBLISHED",
+            "REJECTED",
+            "CLOSED"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "jobId",
+            "label": "岗位编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 32
+          },
+          {
+            "code": "companyId",
+            "label": "所属企业",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_company.companyId",
+            "readonly": true,
+            "serverDerived": "currentUser.companyId"
+          },
+          {
+            "code": "hrOwnerUserId",
+            "label": "企业 HR 负责人",
+            "type": "user",
+            "required": true,
+            "readonly": true,
+            "serverDerived": "fit_company.hrOwnerUserId"
+          },
+          {
+            "code": "reviewDepartmentCode",
+            "label": "归口审核院系",
+            "type": "organization",
+            "required": true,
+            "readonly": true,
+            "serverDerived": "fit_company.reviewDepartmentCode"
+          },
+          {
+            "code": "title",
+            "label": "岗位名称",
+            "type": "text",
+            "required": true,
+            "length": 128
+          },
+          {
+            "code": "jobType",
+            "label": "岗位类型",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "INTERNSHIP",
+              "GRADUATE",
+              "PART_TIME"
+            ]
+          },
+          {
+            "code": "city",
+            "label": "工作城市",
+            "type": "text",
+            "required": true,
+            "length": 64
+          },
+          {
+            "code": "workMode",
+            "label": "工作方式",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "ONSITE",
+              "HYBRID",
+              "REMOTE"
+            ],
+            "default": "ONSITE"
+          },
+          {
+            "code": "salaryMin",
+            "label": "薪资下限",
+            "type": "decimal",
+            "required": true,
+            "min": 0,
+            "precision": 2
+          },
+          {
+            "code": "salaryMax",
+            "label": "薪资上限",
+            "type": "decimal",
+            "required": true,
+            "min": 0,
+            "precision": 2
+          },
+          {
+            "code": "salaryUnit",
+            "label": "薪资单位",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DAY",
+              "MONTH",
+              "YEAR"
+            ]
+          },
+          {
+            "code": "jd",
+            "label": "岗位职责 JD",
+            "type": "long_text",
+            "required": true,
+            "maxLength": 10000
+          },
+          {
+            "code": "skillRequirements",
+            "label": "技能要求",
+            "type": "multi_text",
+            "required": true,
+            "minItems": 1,
+            "maxItems": 30
+          },
+          {
+            "code": "majorRequirements",
+            "label": "专业要求",
+            "type": "multi_text",
+            "required": true,
+            "minItems": 1,
+            "maxItems": 20
+          },
+          {
+            "code": "educationRequirement",
+            "label": "学历要求",
+            "type": "enum",
+            "required": false,
+            "enum": [
+              "NONE",
+              "ASSOCIATE",
+              "BACHELOR",
+              "MASTER"
+            ]
+          },
+          {
+            "code": "applicationDeadline",
+            "label": "申请截止日期",
+            "type": "date",
+            "required": true
+          },
+          {
+            "code": "headcount",
+            "label": "招聘人数",
+            "type": "integer",
+            "required": true,
+            "min": 1,
+            "max": 10000
+          },
+          {
+            "code": "weeklyAttendanceDays",
+            "label": "每周到岗天数",
+            "type": "integer",
+            "required": false,
+            "min": 1,
+            "max": 7
+          },
+          {
+            "code": "internshipMonths",
+            "label": "最短实习月数",
+            "type": "integer",
+            "required": false,
+            "min": 1,
+            "max": 24
+          },
+          {
+            "code": "publishStatus",
+            "label": "发布状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DRAFT",
+              "PENDING_REVIEW",
+              "PUBLISHED",
+              "REJECTED",
+              "CLOSED"
+            ],
+            "default": "DRAFT",
+            "readonly": true
+          },
+          {
+            "code": "currentNode",
+            "label": "当前节点",
+            "type": "text",
+            "required": true,
+            "readonly": true
+          },
+          {
+            "code": "currentHandlerRole",
+            "label": "当前处理角色",
+            "type": "enum",
+            "required": false,
+            "readonly": true,
+            "enum": [
+              "STUDENT",
+              "COUNSELOR",
+              "COMPANY_HR",
+              "DEPARTMENT_ADMIN"
+            ]
+          },
+          {
+            "code": "currentHandlerId",
+            "label": "当前处理人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "latestOpinion",
+            "label": "最近审批意见",
+            "type": "long_text",
+            "required": false,
+            "readonly": true,
+            "maxLength": 2000
+          },
+          {
+            "code": "recommendationEnabled",
+            "label": "进入推荐池",
+            "type": "boolean",
+            "required": false,
+            "readonly": true,
+            "default": false
+          },
+          {
+            "code": "reviewOpinion",
+            "label": "审核意见",
+            "type": "long_text",
+            "required": false,
+            "readonly": true,
+            "maxLength": 2000
+          },
+          {
+            "code": "reviewedBy",
+            "label": "审核人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "reviewedAt",
+            "label": "审核时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "publishedAt",
+            "label": "发布时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [
+          {
+            "code": "approvalRecords",
+            "name": "审批记录",
+            "readonly": true,
+            "fields": [
+              {
+                "code": "recordId",
+                "label": "记录编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true
+              },
+              {
+                "code": "commandId",
+                "label": "幂等命令编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true,
+                "length": 128
+              },
+              {
+                "code": "nodeCode",
+                "label": "节点编码",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "actorRole",
+                "label": "处理角色",
+                "type": "enum",
+                "required": true,
+                "enum": [
+                  "STUDENT",
+                  "COUNSELOR",
+                  "COMPANY_HR",
+                  "DEPARTMENT_ADMIN"
+                ]
+              },
+              {
+                "code": "actorId",
+                "label": "处理人",
+                "type": "user",
+                "required": true
+              },
+              {
+                "code": "action",
+                "label": "处理动作",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "opinion",
+                "label": "审批意见",
+                "type": "long_text",
+                "required": false,
+                "maxLength": 2000
+              },
+              {
+                "code": "fromStatus",
+                "label": "原状态",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "toStatus",
+                "label": "新状态",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "operatedAt",
+                "label": "处理时间",
+                "type": "datetime",
+                "required": true
+              }
+            ]
+          }
+        ],
+        "relationships": [
+          {
+            "field": "companyId",
+            "target": "fit_company",
+            "targetField": "companyId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "hrOwnerUserId",
+            "target": "platform_user",
+            "cardinality": "many-to-one"
+          },
+          {
+            "field": "reviewDepartmentCode",
+            "target": "platform_organization",
+            "cardinality": "many-to-one"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "jobId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "companyId",
+              "publishStatus"
+            ]
+          },
+          {
+            "fields": [
+              "publishStatus",
+              "applicationDeadline"
+            ]
+          }
+        ],
+        "constraints": []
+      },
+      {
+        "code": "fit_job_application",
+        "name": "岗位申请",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "applicationId",
+        "ownerField": "studentUserId",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_job_application_list",
+          "formPage": "fit_job_application_form",
+          "supportedModes": [
+            "CREATE",
+            "EDIT",
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "status",
+          "initial": "DRAFT",
+          "values": [
+            "DRAFT",
+            "SUBMITTED",
+            "COMPANY_REVIEW",
+            "INTERVIEW",
+            "OFFERED",
+            "REJECTED",
+            "RETURNED",
+            "WITHDRAWN"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "applicationId",
+            "label": "岗位申请编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 64,
+            "readonly": true,
+            "serverGenerated": true
+          },
+          {
+            "code": "createCommandId",
+            "label": "创建幂等命令编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "readonly": true,
+            "length": 128
+          },
+          {
+            "code": "activeApplicationKey",
+            "label": "活动申请唯一键",
+            "type": "text",
+            "required": false,
+            "unique": true,
+            "readonly": true,
+            "length": 160
+          },
+          {
+            "code": "studentId",
+            "label": "学生档案",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_student_profile.studentId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "currentUser.studentId"
+          },
+          {
+            "code": "studentUserId",
+            "label": "学生用户",
+            "type": "user",
+            "required": true,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_student_profile.studentUserId"
+          },
+          {
+            "code": "jobId",
+            "label": "申请岗位",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_job.jobId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedJob.jobId"
+          },
+          {
+            "code": "companyId",
+            "label": "岗位企业",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_company.companyId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_job.companyId"
+          },
+          {
+            "code": "resumeId",
+            "label": "投递简历",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_resume.resumeId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedResume.resumeId"
+          },
+          {
+            "code": "source",
+            "label": "申请来源",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "RECOMMENDATION",
+              "MANUAL"
+            ],
+            "default": "MANUAL"
+          },
+          {
+            "code": "matchRecordId",
+            "label": "匹配记录编号",
+            "type": "text",
+            "required": false,
+            "length": 64
+          },
+          {
+            "code": "status",
+            "label": "申请状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DRAFT",
+              "SUBMITTED",
+              "COMPANY_REVIEW",
+              "INTERVIEW",
+              "OFFERED",
+              "REJECTED",
+              "RETURNED",
+              "WITHDRAWN"
+            ],
+            "default": "DRAFT",
+            "readonly": true
+          },
+          {
+            "code": "currentNode",
+            "label": "当前节点",
+            "type": "text",
+            "required": true,
+            "readonly": true
+          },
+          {
+            "code": "currentHandlerRole",
+            "label": "当前处理角色",
+            "type": "enum",
+            "required": false,
+            "readonly": true,
+            "enum": [
+              "STUDENT",
+              "COUNSELOR",
+              "COMPANY_HR",
+              "DEPARTMENT_ADMIN"
+            ]
+          },
+          {
+            "code": "currentHandlerId",
+            "label": "当前处理人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "latestOpinion",
+            "label": "最近审批意见",
+            "type": "long_text",
+            "required": false,
+            "readonly": true,
+            "maxLength": 2000
+          },
+          {
+            "code": "submittedAt",
+            "label": "提交时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "completedAt",
+            "label": "完成时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [
+          {
+            "code": "approvalRecords",
+            "name": "审批记录",
+            "readonly": true,
+            "fields": [
+              {
+                "code": "recordId",
+                "label": "记录编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true
+              },
+              {
+                "code": "commandId",
+                "label": "幂等命令编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true,
+                "length": 128
+              },
+              {
+                "code": "nodeCode",
+                "label": "节点编码",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "actorRole",
+                "label": "处理角色",
+                "type": "enum",
+                "required": true,
+                "enum": [
+                  "STUDENT",
+                  "COUNSELOR",
+                  "COMPANY_HR",
+                  "DEPARTMENT_ADMIN"
+                ]
+              },
+              {
+                "code": "actorId",
+                "label": "处理人",
+                "type": "user",
+                "required": true
+              },
+              {
+                "code": "action",
+                "label": "处理动作",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "opinion",
+                "label": "审批意见",
+                "type": "long_text",
+                "required": false,
+                "maxLength": 2000
+              },
+              {
+                "code": "fromStatus",
+                "label": "原状态",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "toStatus",
+                "label": "新状态",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "operatedAt",
+                "label": "处理时间",
+                "type": "datetime",
+                "required": true
+              }
+            ]
+          }
+        ],
+        "relationships": [
+          {
+            "field": "studentId",
+            "target": "fit_student_profile",
+            "targetField": "studentId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "jobId",
+            "target": "fit_job",
+            "targetField": "jobId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "companyId",
+            "target": "fit_company",
+            "targetField": "companyId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "resumeId",
+            "target": "fit_resume",
+            "targetField": "resumeId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "applicationId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "createCommandId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "activeApplicationKey"
+            ],
+            "unique": true,
+            "nullsDistinct": true
+          },
+          {
+            "fields": [
+              "studentId",
+              "jobId",
+              "status"
+            ]
+          },
+          {
+            "fields": [
+              "companyId",
+              "status"
+            ]
+          }
+        ],
+        "constraints": [
+          {
+            "code": "job_application_active_unique",
+            "type": "unique_business_key",
+            "rule": "activeApplicationKey 在 DRAFT/SUBMITTED/COMPANY_REVIEW/INTERVIEW/RETURNED/OFFERED 状态保持 studentId:jobId，REJECTED/WITHDRAWN 清空；平台唯一约束原子阻止并发重复申请"
+          },
+          {
+            "code": "job_application_link_consistency",
+            "type": "service_invariant",
+            "sources": [
+              {
+                "source": "fit_student_profile",
+                "fieldMatches": {
+                  "studentId": "studentId",
+                  "studentUserId": "studentUserId"
+                }
+              },
+              {
+                "source": "fit_job",
+                "fieldMatches": {
+                  "jobId": "jobId",
+                  "companyId": "companyId"
+                }
+              },
+              {
+                "source": "fit_resume",
+                "fieldMatches": {
+                  "resumeId": "resumeId",
+                  "studentId": "studentId"
+                }
+              }
+            ],
+            "rule": "studentId/studentUserId/jobId/companyId/resumeId 必须与关联档案和岗位一致"
+          }
+        ]
+      },
+      {
+        "code": "fit_internship_application",
+        "name": "实习申请",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "internshipApplicationId",
+        "ownerField": "studentUserId",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_internship_application_list",
+          "formPage": "fit_internship_application_form",
+          "supportedModes": [
+            "CREATE",
+            "EDIT",
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "status",
+          "initial": "DRAFT",
+          "values": [
+            "DRAFT",
+            "COUNSELOR_REVIEW",
+            "DEPARTMENT_REVIEW",
+            "COMPANY_CONFIRMATION",
+            "APPROVED",
+            "RETURNED",
+            "REJECTED",
+            "CANCELLED"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "internshipApplicationId",
+            "label": "实习申请编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 40,
+            "readonly": true,
+            "serverGenerated": true
+          },
+          {
+            "code": "jobApplicationId",
+            "label": "岗位申请",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_job_application.applicationId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedOfferedJobApplication.applicationId"
+          },
+          {
+            "code": "studentId",
+            "label": "学生档案",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_student_profile.studentId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_job_application.studentId"
+          },
+          {
+            "code": "studentUserId",
+            "label": "学生用户",
+            "type": "user",
+            "required": true,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_job_application.studentUserId"
+          },
+          {
+            "code": "jobId",
+            "label": "实习岗位",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_job.jobId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_job_application.jobId"
+          },
+          {
+            "code": "companyId",
+            "label": "实习企业",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_company.companyId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_job_application.companyId"
+          },
+          {
+            "code": "resumeId",
+            "label": "关联简历",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_resume.resumeId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_job_application.resumeId"
+          },
+          {
+            "code": "internshipStartDate",
+            "label": "实习开始日期",
+            "type": "date",
+            "required": true
+          },
+          {
+            "code": "internshipEndDate",
+            "label": "实习结束日期",
+            "type": "date",
+            "required": true
+          },
+          {
+            "code": "weeklyAttendanceDays",
+            "label": "每周到岗天数",
+            "type": "integer",
+            "required": true,
+            "min": 1,
+            "max": 7
+          },
+          {
+            "code": "workCity",
+            "label": "工作城市",
+            "type": "text",
+            "required": true,
+            "length": 64
+          },
+          {
+            "code": "workAddress",
+            "label": "工作地址",
+            "type": "text",
+            "required": false,
+            "length": 256
+          },
+          {
+            "code": "companySupervisorName",
+            "label": "企业导师",
+            "type": "text",
+            "required": false,
+            "length": 64
+          },
+          {
+            "code": "companySupervisorContact",
+            "label": "企业导师联系方式",
+            "type": "text",
+            "required": false,
+            "sensitivity": "BUSINESS_CONTACT",
+            "masked": true
+          },
+          {
+            "code": "agreementAttachment",
+            "label": "实习协议",
+            "type": "attachment",
+            "required": false
+          },
+          {
+            "code": "safetyCommitmentAccepted",
+            "label": "安全承诺确认",
+            "type": "boolean",
+            "required": true,
+            "default": false
+          },
+          {
+            "code": "status",
+            "label": "审批状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DRAFT",
+              "COUNSELOR_REVIEW",
+              "DEPARTMENT_REVIEW",
+              "COMPANY_CONFIRMATION",
+              "APPROVED",
+              "RETURNED",
+              "REJECTED",
+              "CANCELLED"
+            ],
+            "default": "DRAFT",
+            "readonly": true
+          },
+          {
+            "code": "currentNode",
+            "label": "当前节点",
+            "type": "text",
+            "required": true,
+            "readonly": true
+          },
+          {
+            "code": "currentHandlerRole",
+            "label": "当前处理角色",
+            "type": "enum",
+            "required": false,
+            "readonly": true,
+            "enum": [
+              "STUDENT",
+              "COUNSELOR",
+              "COMPANY_HR",
+              "DEPARTMENT_ADMIN"
+            ]
+          },
+          {
+            "code": "currentHandlerId",
+            "label": "当前处理人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "latestOpinion",
+            "label": "最近审批意见",
+            "type": "long_text",
+            "required": false,
+            "readonly": true,
+            "maxLength": 2000
+          },
+          {
+            "code": "returnedFromNode",
+            "label": "退回来源节点",
+            "type": "text",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "submittedAt",
+            "label": "提交时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "approvedAt",
+            "label": "通过时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [
+          {
+            "code": "approvalRecords",
+            "name": "审批记录",
+            "readonly": true,
+            "fields": [
+              {
+                "code": "recordId",
+                "label": "记录编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true
+              },
+              {
+                "code": "commandId",
+                "label": "幂等命令编号",
+                "type": "text",
+                "required": true,
+                "uniqueWithinParent": true,
+                "length": 128
+              },
+              {
+                "code": "nodeCode",
+                "label": "节点编码",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "actorRole",
+                "label": "处理角色",
+                "type": "enum",
+                "required": true,
+                "enum": [
+                  "STUDENT",
+                  "COUNSELOR",
+                  "COMPANY_HR",
+                  "DEPARTMENT_ADMIN"
+                ]
+              },
+              {
+                "code": "actorId",
+                "label": "处理人",
+                "type": "user",
+                "required": true
+              },
+              {
+                "code": "action",
+                "label": "处理动作",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "opinion",
+                "label": "审批意见",
+                "type": "long_text",
+                "required": false,
+                "maxLength": 2000
+              },
+              {
+                "code": "fromStatus",
+                "label": "原状态",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "toStatus",
+                "label": "新状态",
+                "type": "text",
+                "required": true
+              },
+              {
+                "code": "operatedAt",
+                "label": "处理时间",
+                "type": "datetime",
+                "required": true
+              }
+            ]
+          }
+        ],
+        "relationships": [
+          {
+            "field": "jobApplicationId",
+            "target": "fit_job_application",
+            "targetField": "applicationId",
+            "cardinality": "one-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "studentId",
+            "target": "fit_student_profile",
+            "targetField": "studentId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "jobId",
+            "target": "fit_job",
+            "targetField": "jobId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "companyId",
+            "target": "fit_company",
+            "targetField": "companyId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "resumeId",
+            "target": "fit_resume",
+            "targetField": "resumeId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "internshipApplicationId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "jobApplicationId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "studentId",
+              "status"
+            ]
+          },
+          {
+            "fields": [
+              "companyId",
+              "status"
+            ]
+          }
+        ],
+        "constraints": [
+          {
+            "code": "internship_job_application_consistency",
+            "type": "service_invariant",
+            "source": "fit_job_application",
+            "requiredSourceStatus": {
+              "field": "status",
+              "value": "OFFERED"
+            },
+            "fieldMatches": {
+              "jobApplicationId": "applicationId",
+              "studentId": "studentId",
+              "studentUserId": "studentUserId",
+              "jobId": "jobId",
+              "companyId": "companyId",
+              "resumeId": "resumeId"
+            },
+            "rule": "提交前必须存在同一学生、岗位、企业、简历且 status == OFFERED 的岗位申请"
+          }
+        ]
+      },
+      {
+        "code": "fit_internship_log",
+        "name": "实习日志",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "logId",
+        "ownerField": "studentUserId",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_internship_log_list",
+          "formPage": "fit_internship_log_form",
+          "supportedModes": [
+            "CREATE",
+            "EDIT",
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "status",
+          "initial": "DRAFT",
+          "values": [
+            "DRAFT",
+            "SUBMITTED",
+            "REVIEWED",
+            "RETURNED"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "logId",
+            "label": "日志编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 40
+          },
+          {
+            "code": "internshipApplicationId",
+            "label": "实习申请",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_internship_application.internshipApplicationId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedInternshipApplication.internshipApplicationId"
+          },
+          {
+            "code": "studentId",
+            "label": "学生档案",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_student_profile.studentId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_internship_application.studentId"
+          },
+          {
+            "code": "studentUserId",
+            "label": "学生用户",
+            "type": "user",
+            "required": true,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_internship_application.studentUserId"
+          },
+          {
+            "code": "companyId",
+            "label": "实习企业",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_company.companyId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_internship_application.companyId"
+          },
+          {
+            "code": "logDate",
+            "label": "日志日期",
+            "type": "date",
+            "required": true
+          },
+          {
+            "code": "hours",
+            "label": "实习工时",
+            "type": "decimal",
+            "required": true,
+            "min": 0,
+            "max": 24,
+            "precision": 1
+          },
+          {
+            "code": "workContent",
+            "label": "工作内容",
+            "type": "long_text",
+            "required": true,
+            "maxLength": 5000
+          },
+          {
+            "code": "learningSummary",
+            "label": "学习总结",
+            "type": "long_text",
+            "required": true,
+            "maxLength": 3000
+          },
+          {
+            "code": "problems",
+            "label": "问题与支持需求",
+            "type": "long_text",
+            "required": false,
+            "maxLength": 3000
+          },
+          {
+            "code": "riskLevel",
+            "label": "风险等级",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "NONE",
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "default": "NONE"
+          },
+          {
+            "code": "attachments",
+            "label": "日志附件",
+            "type": "multi_attachment",
+            "required": false
+          },
+          {
+            "code": "status",
+            "label": "日志状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DRAFT",
+              "SUBMITTED",
+              "REVIEWED",
+              "RETURNED"
+            ],
+            "default": "DRAFT",
+            "readonly": true
+          },
+          {
+            "code": "counselorComment",
+            "label": "辅导员意见",
+            "type": "long_text",
+            "required": false,
+            "readonly": true,
+            "maxLength": 2000
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [],
+        "relationships": [
+          {
+            "field": "internshipApplicationId",
+            "target": "fit_internship_application",
+            "targetField": "internshipApplicationId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "studentId",
+            "target": "fit_student_profile",
+            "targetField": "studentId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "companyId",
+            "target": "fit_company",
+            "targetField": "companyId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "logId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "internshipApplicationId",
+              "logDate"
+            ],
+            "unique": true
+          }
+        ],
+        "constraints": [
+          {
+            "code": "internship_log_parent_consistency",
+            "type": "service_invariant",
+            "source": "fit_internship_application",
+            "fieldMatches": {
+              "internshipApplicationId": "internshipApplicationId",
+              "studentId": "studentId",
+              "studentUserId": "studentUserId",
+              "companyId": "companyId"
+            },
+            "rule": "父实习申请必须属于当前学生；internshipApplicationId/studentId/studentUserId/companyId 全部由服务端加载父单据后写入并保持一致"
+          }
+        ]
+      },
+      {
+        "code": "fit_tripartite_review",
+        "name": "三方评价",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "reviewId",
+        "ownerField": "studentUserId",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_tripartite_review_list",
+          "formPage": "fit_tripartite_review_form",
+          "supportedModes": [
+            "CREATE",
+            "EDIT",
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "status",
+          "initial": "DRAFT",
+          "values": [
+            "DRAFT",
+            "COLLECTING",
+            "COMPLETED",
+            "ARCHIVED"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "reviewId",
+            "label": "评价编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 40
+          },
+          {
+            "code": "internshipApplicationId",
+            "label": "实习申请",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_internship_application.internshipApplicationId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "authorizedInternshipApplication.internshipApplicationId"
+          },
+          {
+            "code": "studentId",
+            "label": "学生档案",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_student_profile.studentId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_internship_application.studentId"
+          },
+          {
+            "code": "studentUserId",
+            "label": "学生用户",
+            "type": "user",
+            "required": true,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_internship_application.studentUserId"
+          },
+          {
+            "code": "companyId",
+            "label": "实习企业",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_company.companyId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "fit_internship_application.companyId"
+          },
+          {
+            "code": "reviewPeriod",
+            "label": "评价周期",
+            "type": "text",
+            "required": true,
+            "length": 64
+          },
+          {
+            "code": "studentSelfScore",
+            "label": "学生自评分",
+            "type": "integer",
+            "required": false,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "code": "studentComment",
+            "label": "学生总结",
+            "type": "long_text",
+            "required": false,
+            "maxLength": 3000
+          },
+          {
+            "code": "companyScore",
+            "label": "企业评分",
+            "type": "integer",
+            "required": false,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "code": "companyComment",
+            "label": "企业评价",
+            "type": "long_text",
+            "required": false,
+            "maxLength": 3000
+          },
+          {
+            "code": "companyEvaluatorId",
+            "label": "企业评价人",
+            "type": "user",
+            "required": false
+          },
+          {
+            "code": "counselorScore",
+            "label": "辅导员评分",
+            "type": "integer",
+            "required": false,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "code": "counselorComment",
+            "label": "辅导员评价",
+            "type": "long_text",
+            "required": false,
+            "maxLength": 3000
+          },
+          {
+            "code": "counselorEvaluatorId",
+            "label": "辅导员评价人",
+            "type": "user",
+            "required": false
+          },
+          {
+            "code": "finalScore",
+            "label": "综合评分",
+            "type": "decimal",
+            "required": false,
+            "readonly": true,
+            "min": 0,
+            "max": 100,
+            "precision": 1
+          },
+          {
+            "code": "conclusion",
+            "label": "评价结论",
+            "type": "enum",
+            "required": false,
+            "enum": [
+              "EXCELLENT",
+              "QUALIFIED",
+              "NEEDS_IMPROVEMENT",
+              "UNQUALIFIED"
+            ]
+          },
+          {
+            "code": "status",
+            "label": "评价状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DRAFT",
+              "COLLECTING",
+              "COMPLETED",
+              "ARCHIVED"
+            ],
+            "default": "DRAFT",
+            "readonly": true
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [],
+        "relationships": [
+          {
+            "field": "internshipApplicationId",
+            "target": "fit_internship_application",
+            "targetField": "internshipApplicationId",
+            "cardinality": "one-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "studentId",
+            "target": "fit_student_profile",
+            "targetField": "studentId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "companyId",
+            "target": "fit_company",
+            "targetField": "companyId",
+            "cardinality": "many-to-one",
+            "onDelete": "restrict"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "reviewId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "internshipApplicationId"
+            ],
+            "unique": true
+          }
+        ],
+        "constraints": [
+          {
+            "code": "tripartite_review_parent_consistency",
+            "type": "service_invariant",
+            "source": "fit_internship_application",
+            "fieldMatches": {
+              "internshipApplicationId": "internshipApplicationId",
+              "studentId": "studentId",
+              "studentUserId": "studentUserId",
+              "companyId": "companyId"
+            },
+            "rule": "父实习申请必须属于当前学生；internshipApplicationId/studentId/studentUserId/companyId 全部由服务端加载父单据后写入并保持一致"
+          }
+        ]
+      },
+      {
+        "code": "fit_employment_destination",
+        "name": "就业去向",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "destinationId",
+        "ownerField": "studentUserId",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_employment_destination_list",
+          "formPage": "fit_employment_destination_form",
+          "supportedModes": [
+            "CREATE",
+            "EDIT",
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "verificationStatus",
+          "initial": "DRAFT",
+          "values": [
+            "DRAFT",
+            "PENDING",
+            "VERIFIED",
+            "RETURNED"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "destinationId",
+            "label": "去向编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 40
+          },
+          {
+            "code": "studentId",
+            "label": "学生档案",
+            "type": "reference",
+            "required": true,
+            "reference": "fit_student_profile.studentId",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "currentUser.studentProfile.studentId"
+          },
+          {
+            "code": "studentUserId",
+            "label": "学生用户",
+            "type": "user",
+            "required": true,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "currentUser.id"
+          },
+          {
+            "code": "destinationType",
+            "label": "去向类型",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "EMPLOYMENT",
+              "FURTHER_STUDY",
+              "ENTREPRENEURSHIP",
+              "FLEXIBLE",
+              "UNEMPLOYED",
+              "OTHER"
+            ]
+          },
+          {
+            "code": "companyId",
+            "label": "就业企业",
+            "type": "reference",
+            "required": false,
+            "reference": "fit_company.companyId"
+          },
+          {
+            "code": "companyName",
+            "label": "单位名称",
+            "type": "text",
+            "required": false,
+            "length": 256
+          },
+          {
+            "code": "jobTitle",
+            "label": "岗位名称",
+            "type": "text",
+            "required": false,
+            "length": 128
+          },
+          {
+            "code": "industry",
+            "label": "所属行业",
+            "type": "text",
+            "required": false,
+            "length": 128
+          },
+          {
+            "code": "city",
+            "label": "就业城市",
+            "type": "text",
+            "required": false,
+            "length": 64
+          },
+          {
+            "code": "salaryRange",
+            "label": "薪资区间",
+            "type": "enum",
+            "required": false,
+            "enum": [
+              "LT_3K",
+              "3K_5K",
+              "5K_8K",
+              "8K_12K",
+              "GE_12K",
+              "NOT_APPLICABLE"
+            ]
+          },
+          {
+            "code": "contractType",
+            "label": "签约类型",
+            "type": "enum",
+            "required": false,
+            "enum": [
+              "TRIPARTITE",
+              "LABOR_CONTRACT",
+              "OFFER",
+              "OTHER"
+            ]
+          },
+          {
+            "code": "startDate",
+            "label": "入职/入学日期",
+            "type": "date",
+            "required": false
+          },
+          {
+            "code": "proofAttachment",
+            "label": "证明材料",
+            "type": "attachment",
+            "required": false,
+            "sensitivity": "PERSONAL"
+          },
+          {
+            "code": "verificationStatus",
+            "label": "核验状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DRAFT",
+              "PENDING",
+              "VERIFIED",
+              "RETURNED"
+            ],
+            "default": "DRAFT",
+            "readonly": true
+          },
+          {
+            "code": "verifierId",
+            "label": "核验人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "verificationOpinion",
+            "label": "核验意见",
+            "type": "long_text",
+            "required": false,
+            "readonly": true,
+            "maxLength": 2000
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [],
+        "relationships": [
+          {
+            "field": "studentId",
+            "target": "fit_student_profile",
+            "targetField": "studentId",
+            "cardinality": "one-to-one",
+            "onDelete": "restrict"
+          },
+          {
+            "field": "companyId",
+            "target": "fit_company",
+            "targetField": "companyId",
+            "cardinality": "many-to-one",
+            "onDelete": "set-null"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "destinationId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "studentId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "verificationStatus",
+              "destinationType"
+            ]
+          }
+        ],
+        "constraints": [
+          {
+            "code": "employment_destination_student_identity_consistency",
+            "type": "service_invariant",
+            "source": "fit_student_profile",
+            "fieldMatches": {
+              "studentId": "studentId",
+              "studentUserId": "studentUserId"
+            },
+            "rule": "studentId/studentUserId 必须由服务端从当前登录学生档案派生并匹配同一学生，禁止客户端覆盖"
+          }
+        ]
+      },
+      {
+        "code": "fit_policy",
+        "name": "政策条目",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "policyId",
+        "ownerField": "createdBy",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_policy_list",
+          "formPage": "fit_policy_form",
+          "supportedModes": [
+            "CREATE",
+            "EDIT",
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "status",
+          "initial": "DRAFT",
+          "values": [
+            "DRAFT",
+            "PUBLISHED",
+            "EXPIRED",
+            "ARCHIVED"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "policyId",
+            "label": "政策编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 40
+          },
+          {
+            "code": "ownerDepartmentCode",
+            "label": "维护院系",
+            "type": "organization",
+            "required": true
+          },
+          {
+            "code": "title",
+            "label": "政策标题",
+            "type": "text",
+            "required": true,
+            "length": 256
+          },
+          {
+            "code": "regionCode",
+            "label": "地区编码",
+            "type": "text",
+            "required": true,
+            "length": 64
+          },
+          {
+            "code": "regionName",
+            "label": "适用地区",
+            "type": "text",
+            "required": true,
+            "length": 128
+          },
+          {
+            "code": "audienceTags",
+            "label": "适用人群",
+            "type": "multi_text",
+            "required": true,
+            "minItems": 1,
+            "maxItems": 20
+          },
+          {
+            "code": "keywords",
+            "label": "关键词",
+            "type": "multi_text",
+            "required": true,
+            "minItems": 1,
+            "maxItems": 30
+          },
+          {
+            "code": "summary",
+            "label": "政策摘要",
+            "type": "long_text",
+            "required": true,
+            "maxLength": 3000
+          },
+          {
+            "code": "content",
+            "label": "政策正文",
+            "type": "rich_text",
+            "required": true
+          },
+          {
+            "code": "sourceUrl",
+            "label": "来源地址",
+            "type": "url",
+            "required": true
+          },
+          {
+            "code": "issuer",
+            "label": "发布机构",
+            "type": "text",
+            "required": true,
+            "length": 256
+          },
+          {
+            "code": "publishedAt",
+            "label": "发布日期",
+            "type": "date",
+            "required": true
+          },
+          {
+            "code": "effectiveFrom",
+            "label": "生效日期",
+            "type": "date",
+            "required": false
+          },
+          {
+            "code": "effectiveTo",
+            "label": "失效日期",
+            "type": "date",
+            "required": false
+          },
+          {
+            "code": "status",
+            "label": "发布状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "EXPIRED",
+              "ARCHIVED"
+            ],
+            "default": "DRAFT",
+            "readonly": true
+          },
+          {
+            "code": "knowledgeBaseId",
+            "label": "知识库编号",
+            "type": "text",
+            "required": false,
+            "length": 64
+          },
+          {
+            "code": "vectorSyncStatus",
+            "label": "向量同步状态",
+            "type": "enum",
+            "required": false,
+            "enum": [
+              "NOT_SYNCED",
+              "QUEUED",
+              "SYNCED",
+              "FAILED"
+            ],
+            "default": "NOT_SYNCED"
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [],
+        "relationships": [
+          {
+            "field": "ownerDepartmentCode",
+            "target": "platform_organization",
+            "cardinality": "many-to-one"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "policyId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "regionCode",
+              "status"
+            ]
+          },
+          {
+            "fields": [
+              "effectiveFrom",
+              "effectiveTo"
+            ]
+          }
+        ],
+        "constraints": []
+      },
+      {
+        "code": "fit_ai_call_log",
+        "name": "AI 调用日志",
+        "kind": "form",
+        "primaryKey": "id",
+        "numberField": "callId",
+        "ownerField": "operatorUserId",
+        "permissionsRef": "fitjob-role-permission-matrix",
+        "ui": {
+          "listPage": "fit_ai_call_log_list",
+          "formPage": "fit_ai_call_log_form",
+          "supportedModes": [
+            "VIEW"
+          ]
+        },
+        "status": {
+          "field": "status",
+          "initial": "QUEUED",
+          "values": [
+            "QUEUED",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLED"
+          ]
+        },
+        "fields": [
+          {
+            "code": "id",
+            "label": "主键",
+            "type": "long",
+            "required": true,
+            "primaryKey": true,
+            "readonly": true
+          },
+          {
+            "code": "callId",
+            "label": "调用编号",
+            "type": "text",
+            "required": true,
+            "unique": true,
+            "length": 64
+          },
+          {
+            "code": "studentId",
+            "label": "关联学生",
+            "type": "reference",
+            "required": false,
+            "reference": "fit_student_profile.studentId",
+            "sensitivity": "PERSONAL",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "sourceBusinessRecord.studentId"
+          },
+          {
+            "code": "studentUserId",
+            "label": "关联学生用户",
+            "type": "user",
+            "required": false,
+            "sensitivity": "PERSONAL",
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "sourceBusinessRecord.studentUserId"
+          },
+          {
+            "code": "businessType",
+            "label": "业务类型",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "RESUME_DIAGNOSIS",
+              "JOB_MATCH_EXPLANATION",
+              "INTERVIEW",
+              "POLICY_QA",
+              "EMPLOYMENT_ANALYSIS"
+            ]
+          },
+          {
+            "code": "businessId",
+            "label": "业务单据编号",
+            "type": "text",
+            "required": true,
+            "length": 64,
+            "readonly": true,
+            "immutableAfterCreate": true,
+            "serverDerived": "sourceBusinessRecord.businessId"
+          },
+          {
+            "code": "agentCode",
+            "label": "Agent 编码",
+            "type": "text",
+            "required": true,
+            "length": 64
+          },
+          {
+            "code": "modelCode",
+            "label": "模型编码",
+            "type": "text",
+            "required": true,
+            "length": 128
+          },
+          {
+            "code": "requestHash",
+            "label": "请求摘要哈希",
+            "type": "text",
+            "required": true,
+            "length": 128
+          },
+          {
+            "code": "inputSummary",
+            "label": "输入摘要（脱敏）",
+            "type": "long_text",
+            "required": true,
+            "maxLength": 5000
+          },
+          {
+            "code": "outputSummary",
+            "label": "输出摘要（脱敏）",
+            "type": "long_text",
+            "required": false,
+            "maxLength": 10000
+          },
+          {
+            "code": "resultJson",
+            "label": "结构化结果",
+            "type": "json",
+            "required": false,
+            "sensitivity": "PERSONAL"
+          },
+          {
+            "code": "status",
+            "label": "调用状态",
+            "type": "enum",
+            "required": true,
+            "enum": [
+              "QUEUED",
+              "RUNNING",
+              "SUCCEEDED",
+              "FAILED",
+              "CANCELLED"
+            ],
+            "default": "QUEUED",
+            "readonly": true
+          },
+          {
+            "code": "latencyMs",
+            "label": "耗时毫秒",
+            "type": "long",
+            "required": false,
+            "min": 0
+          },
+          {
+            "code": "inputTokens",
+            "label": "输入 Token",
+            "type": "integer",
+            "required": false,
+            "min": 0
+          },
+          {
+            "code": "outputTokens",
+            "label": "输出 Token",
+            "type": "integer",
+            "required": false,
+            "min": 0
+          },
+          {
+            "code": "errorCode",
+            "label": "错误码",
+            "type": "text",
+            "required": false,
+            "length": 128
+          },
+          {
+            "code": "errorMessage",
+            "label": "错误摘要",
+            "type": "long_text",
+            "required": false,
+            "maxLength": 3000
+          },
+          {
+            "code": "traceId",
+            "label": "链路追踪编号",
+            "type": "text",
+            "required": true,
+            "length": 128
+          },
+          {
+            "code": "operatorUserId",
+            "label": "调用用户",
+            "type": "user",
+            "required": true
+          },
+          {
+            "code": "calledAt",
+            "label": "调用时间",
+            "type": "datetime",
+            "required": true
+          },
+          {
+            "code": "verifiedBy",
+            "label": "复核人",
+            "type": "user",
+            "required": false
+          },
+          {
+            "code": "verifiedAt",
+            "label": "复核时间",
+            "type": "datetime",
+            "required": false
+          },
+          {
+            "code": "createdBy",
+            "label": "创建人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "createdAt",
+            "label": "创建时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedBy",
+            "label": "最后修改人",
+            "type": "user",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "modifiedAt",
+            "label": "最后修改时间",
+            "type": "datetime",
+            "required": false,
+            "readonly": true
+          },
+          {
+            "code": "dataVersion",
+            "label": "数据版本",
+            "type": "integer",
+            "required": false,
+            "readonly": true,
+            "default": 1
+          }
+        ],
+        "detailTables": [],
+        "relationships": [
+          {
+            "field": "studentId",
+            "target": "fit_student_profile",
+            "targetField": "studentId",
+            "cardinality": "many-to-one",
+            "onDelete": "set-null"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              "callId"
+            ],
+            "unique": true
+          },
+          {
+            "fields": [
+              "businessType",
+              "businessId"
+            ]
+          },
+          {
+            "fields": [
+              "traceId"
+            ]
+          },
+          {
+            "fields": [
+              "status",
+              "calledAt"
+            ]
+          }
+        ],
+        "constraints": [
+          {
+            "code": "ai_call_log_business_owner_consistency",
+            "type": "service_invariant",
+            "source": "sourceBusinessRecord",
+            "fieldMatches": {
+              "businessId": "businessId",
+              "studentId": "studentId",
+              "studentUserId": "studentUserId"
+            },
+            "rule": "businessId/studentId/studentUserId 必须由服务端从本次 AI 调用的授权业务单据派生，学生只能读取归属自己的结果摘要"
+          }
+        ]
+      }
+    ]
+  },
+  "permissionMatrix": {
+    "code": "fitjob-role-permission-matrix",
+    "version": "2.0.0",
+    "principle": "least-privilege",
+    "roles": {
+      "STUDENT": {
+        "label": "学生",
+        "assignment": "平台用户与 fit_student_profile.studentUserId 一一绑定",
+        "defaultScope": "SELF"
+      },
+      "COUNSELOR": {
+        "label": "辅导员",
+        "assignment": "平台用户绑定负责班级，或等于学生档案 counselorUserId",
+        "defaultScope": "RESPONSIBLE_STUDENTS"
+      },
+      "COMPANY_HR": {
+        "label": "企业 HR",
+        "assignment": "平台用户等于企业 hrOwnerUserId，或属于企业 HR 用户组",
+        "defaultScope": "OWN_COMPANY"
+      },
+      "DEPARTMENT_ADMIN": {
+        "label": "院系管理员",
+        "assignment": "平台用户绑定一个或多个院系组织",
+        "defaultScope": "DEPARTMENT"
+      }
+    },
+    "dataScopes": {
+      "NONE": "始终为 false",
+      "PUBLIC": "仅发布且未失效的数据",
+      "SELF": "record.studentUserId == currentUser.id",
+      "RESPONSIBLE_STUDENTS": "record.counselorUserId == currentUser.id 或 record.classCode 属于 currentUser.managedClassCodes",
+      "RELATED_STUDENT_RECORDS": "业务单据的 studentId 属于 RESPONSIBLE_STUDENTS",
+      "OWN_COMPANY": "record.companyId 属于 currentUser.companyIds；companyId 必须由服务端从企业成员关系解析，禁止信任客户端 hrOwnerUserId",
+      "RELATED_CANDIDATES": "学生已向 currentUser.companyIds 的岗位提交申请，只暴露候选人摘要字段",
+      "DEPARTMENT": "record.collegeCode 或 record.reviewDepartmentCode 属于 currentUser.departmentCodes；关联单据沿 studentId/companyId 继承院系范围",
+      "DEPARTMENT_OR_PUBLIC": "读取时允许 DEPARTMENT 或 PUBLIC；写操作必须使用 actionScopes 中的 DEPARTMENT"
+    },
+    "scopeRequirements": {
+      "NONE": {
+        "anyFields": []
+      },
+      "PUBLIC": {
+        "publicPredicateRequired": true
+      },
+      "SELF": {
+        "anyFields": [
+          "studentUserId"
+        ]
+      },
+      "RESPONSIBLE_STUDENTS": {
+        "anyFields": [
+          "counselorUserId",
+          "classCode"
+        ]
+      },
+      "RELATED_STUDENT_RECORDS": {
+        "anyFields": [
+          "studentId"
+        ]
+      },
+      "OWN_COMPANY": {
+        "anyFields": [
+          "companyId"
+        ]
+      },
+      "RELATED_CANDIDATES": {
+        "anyFields": [
+          "studentId"
+        ]
+      },
+      "DEPARTMENT": {
+        "anyFields": [
+          "collegeCode",
+          "reviewDepartmentCode",
+          "ownerDepartmentCode",
+          "studentId",
+          "companyId"
+        ]
+      },
+      "DEPARTMENT_OR_PUBLIC": {
+        "anyFields": [
+          "collegeCode",
+          "reviewDepartmentCode",
+          "ownerDepartmentCode",
+          "studentId",
+          "companyId"
+        ],
+        "publicPredicateOptional": true
+      }
+    },
+    "publicPredicates": {
+      "fit_company": "reviewStatus == APPROVED",
+      "fit_job": "publishStatus == PUBLISHED && recommendationEnabled == true && applicationDeadline >= today",
+      "fit_policy": "status == PUBLISHED && effectiveFrom <= today && (effectiveTo == null || effectiveTo >= today)"
+    },
+    "menus": [
+      {
+        "code": "fit_student_center",
+        "label": "我的档案",
+        "roles": [
+          "STUDENT"
+        ]
+      },
+      {
+        "code": "fit_resume_center",
+        "label": "我的简历",
+        "roles": [
+          "STUDENT"
+        ]
+      },
+      {
+        "code": "fit_job_market",
+        "label": "岗位中心",
+        "roles": [
+          "STUDENT",
+          "COUNSELOR",
+          "COMPANY_HR",
+          "DEPARTMENT_ADMIN"
+        ]
+      },
+      {
+        "code": "fit_my_applications",
+        "label": "我的申请",
+        "roles": [
+          "STUDENT"
+        ]
+      },
+      {
+        "code": "fit_student_management",
+        "label": "学生管理",
+        "roles": [
+          "COUNSELOR",
+          "DEPARTMENT_ADMIN"
+        ]
+      },
+      {
+        "code": "fit_company_management",
+        "label": "企业与岗位管理",
+        "roles": [
+          "COUNSELOR",
+          "COMPANY_HR",
+          "DEPARTMENT_ADMIN"
+        ]
+      },
+      {
+        "code": "fit_approval_center",
+        "label": "实习审批中心",
+        "roles": [
+          "COUNSELOR",
+          "COMPANY_HR",
+          "DEPARTMENT_ADMIN"
+        ]
+      },
+      {
+        "code": "fit_internship_management",
+        "label": "实习过程管理",
+        "roles": [
+          "STUDENT",
+          "COUNSELOR",
+          "COMPANY_HR",
+          "DEPARTMENT_ADMIN"
+        ]
+      },
+      {
+        "code": "fit_policy_center",
+        "label": "就业政策",
+        "roles": [
+          "STUDENT",
+          "COUNSELOR",
+          "DEPARTMENT_ADMIN"
+        ]
+      },
+      {
+        "code": "fit_employment_dashboard",
+        "label": "就业驾驶舱",
+        "roles": [
+          "COUNSELOR",
+          "DEPARTMENT_ADMIN"
+        ]
+      },
+      {
+        "code": "fit_ai_audit",
+        "label": "AI 调用审计",
+        "roles": [
+          "DEPARTMENT_ADMIN"
+        ]
+      },
+      {
+        "code": "fit_permission_admin",
+        "label": "权限与基础配置",
+        "roles": [
+          "DEPARTMENT_ADMIN"
+        ]
+      }
+    ],
+    "models": {
+      "fit_student_profile": {
+        "STUDENT": {
+          "actions": [
+            "create",
+            "read",
+            "update",
+            "activate",
+            "archive"
+          ],
+          "dataScope": "SELF",
+          "buttons": [
+            "ADD",
+            "EDIT",
+            "SAVE",
+            "VIEW",
+            "ACTIVATE",
+            "ARCHIVE"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read",
+            "update",
+            "assist_complete"
+          ],
+          "dataScope": "RESPONSIBLE_STUDENTS",
+          "buttons": [
+            "VIEW",
+            "EDIT",
+            "SAVE",
+            "ASSIST_COMPLETE"
+          ]
+        },
+        "COMPANY_HR": {
+          "actions": [
+            "read_summary"
+          ],
+          "dataScope": "RELATED_CANDIDATES",
+          "buttons": [
+            "VIEW_CANDIDATE_SUMMARY"
+          ],
+          "fields": [
+            "studentId",
+            "displayName",
+            "collegeName",
+            "majorName",
+            "graduationYear",
+            "skillTags",
+            "targetRoles"
+          ]
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "create",
+            "read",
+            "update",
+            "archive",
+            "export"
+          ],
+          "dataScope": "DEPARTMENT",
+          "buttons": [
+            "ADD",
+            "EDIT",
+            "SAVE",
+            "VIEW",
+            "ARCHIVE",
+            "EXPORT"
+          ]
+        }
+      },
+      "fit_resume": {
+        "STUDENT": {
+          "actions": [
+            "create",
+            "read",
+            "update",
+            "archive",
+            "set_default",
+            "diagnose"
+          ],
+          "dataScope": "SELF",
+          "buttons": [
+            "ADD",
+            "EDIT",
+            "SAVE",
+            "VIEW",
+            "ARCHIVE",
+            "SET_DEFAULT",
+            "RUN_DIAGNOSIS"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read",
+            "comment"
+          ],
+          "dataScope": "RELATED_STUDENT_RECORDS",
+          "buttons": [
+            "VIEW",
+            "ADD_GUIDANCE"
+          ]
+        },
+        "COMPANY_HR": {
+          "actions": [
+            "read_candidate_resume"
+          ],
+          "dataScope": "RELATED_CANDIDATES",
+          "buttons": [
+            "VIEW_APPLICATION_RESUME"
+          ],
+          "fields": [
+            "resumeId",
+            "versionName",
+            "summary",
+            "skillTags",
+            "sourceFile"
+          ]
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "read",
+            "export_metadata"
+          ],
+          "dataScope": "DEPARTMENT",
+          "buttons": [
+            "VIEW",
+            "EXPORT_METADATA"
+          ]
+        }
+      },
+      "fit_company": {
+        "STUDENT": {
+          "actions": [
+            "read"
+          ],
+          "dataScope": "PUBLIC",
+          "buttons": [
+            "VIEW"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read",
+            "update",
+            "review",
+            "return"
+          ],
+          "dataScope": "DEPARTMENT_OR_PUBLIC",
+          "buttons": [
+            "VIEW",
+            "EDIT",
+            "APPROVE",
+            "RETURN"
+          ],
+          "actionScopes": {
+            "read": "DEPARTMENT_OR_PUBLIC",
+            "update": "DEPARTMENT",
+            "review": "DEPARTMENT",
+            "return": "DEPARTMENT"
+          },
+          "actionConditions": {
+            "update": "reviewStatus IN (DRAFT, REJECTED)",
+            "review": "reviewStatus == PENDING_REVIEW",
+            "return": "reviewStatus == PENDING_REVIEW"
+          }
+        },
+        "COMPANY_HR": {
+          "actions": [
+            "create",
+            "read",
+            "update",
+            "submit"
+          ],
+          "dataScope": "OWN_COMPANY",
+          "buttons": [
+            "ADD",
+            "EDIT",
+            "SAVE",
+            "VIEW",
+            "SUBMIT_REVIEW"
+          ],
+          "actionConditions": {
+            "update": "reviewStatus IN (DRAFT, REJECTED)",
+            "submit": "reviewStatus IN (DRAFT, REJECTED)"
+          }
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "create",
+            "read",
+            "update",
+            "review",
+            "return",
+            "disable",
+            "export"
+          ],
+          "dataScope": "DEPARTMENT_OR_PUBLIC",
+          "buttons": [
+            "ADD",
+            "EDIT",
+            "SAVE",
+            "VIEW",
+            "APPROVE",
+            "RETURN",
+            "DISABLE",
+            "EXPORT"
+          ],
+          "actionScopes": {
+            "create": "DEPARTMENT",
+            "read": "DEPARTMENT_OR_PUBLIC",
+            "update": "DEPARTMENT",
+            "review": "DEPARTMENT",
+            "return": "DEPARTMENT",
+            "disable": "DEPARTMENT",
+            "export": "DEPARTMENT"
+          },
+          "actionConditions": {
+            "update": "reviewStatus IN (DRAFT, REJECTED)",
+            "review": "reviewStatus == PENDING_REVIEW",
+            "return": "reviewStatus == PENDING_REVIEW",
+            "disable": "reviewStatus == APPROVED"
+          }
+        }
+      },
+      "fit_job": {
+        "STUDENT": {
+          "actions": [
+            "read",
+            "apply"
+          ],
+          "dataScope": "PUBLIC",
+          "buttons": [
+            "VIEW",
+            "APPLY"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read",
+            "update",
+            "review",
+            "publish",
+            "return"
+          ],
+          "dataScope": "DEPARTMENT_OR_PUBLIC",
+          "buttons": [
+            "VIEW",
+            "EDIT",
+            "APPROVE_PUBLISH",
+            "RETURN"
+          ],
+          "actionScopes": {
+            "read": "DEPARTMENT_OR_PUBLIC",
+            "update": "DEPARTMENT",
+            "review": "DEPARTMENT",
+            "publish": "DEPARTMENT",
+            "return": "DEPARTMENT"
+          },
+          "actionConditions": {
+            "update": "publishStatus IN (DRAFT, REJECTED)",
+            "review": "publishStatus == PENDING_REVIEW",
+            "publish": "publishStatus == PENDING_REVIEW",
+            "return": "publishStatus == PENDING_REVIEW"
+          }
+        },
+        "COMPANY_HR": {
+          "actions": [
+            "create",
+            "read",
+            "update",
+            "submit",
+            "close"
+          ],
+          "dataScope": "OWN_COMPANY",
+          "buttons": [
+            "ADD",
+            "EDIT",
+            "SAVE",
+            "VIEW",
+            "SUBMIT_REVIEW",
+            "CLOSE"
+          ],
+          "actionConditions": {
+            "update": "publishStatus IN (DRAFT, REJECTED)",
+            "submit": "publishStatus IN (DRAFT, REJECTED)",
+            "close": "publishStatus == PUBLISHED"
+          }
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "create",
+            "read",
+            "update",
+            "review",
+            "publish",
+            "return",
+            "close",
+            "export"
+          ],
+          "dataScope": "DEPARTMENT_OR_PUBLIC",
+          "buttons": [
+            "ADD",
+            "EDIT",
+            "SAVE",
+            "VIEW",
+            "APPROVE_PUBLISH",
+            "RETURN",
+            "CLOSE",
+            "EXPORT"
+          ],
+          "actionScopes": {
+            "create": "DEPARTMENT",
+            "read": "DEPARTMENT_OR_PUBLIC",
+            "update": "DEPARTMENT",
+            "review": "DEPARTMENT",
+            "publish": "DEPARTMENT",
+            "return": "DEPARTMENT",
+            "close": "DEPARTMENT",
+            "export": "DEPARTMENT"
+          },
+          "actionConditions": {
+            "update": "publishStatus IN (DRAFT, REJECTED)",
+            "review": "publishStatus == PENDING_REVIEW",
+            "publish": "publishStatus == PENDING_REVIEW",
+            "return": "publishStatus == PENDING_REVIEW",
+            "close": "publishStatus == PUBLISHED"
+          }
+        }
+      },
+      "fit_job_application": {
+        "STUDENT": {
+          "actions": [
+            "create",
+            "read",
+            "update_draft",
+            "submit",
+            "resubmit",
+            "withdraw"
+          ],
+          "dataScope": "SELF",
+          "buttons": [
+            "APPLY",
+            "EDIT_DRAFT",
+            "SUBMIT",
+            "RESUBMIT",
+            "WITHDRAW",
+            "VIEW"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read",
+            "approve",
+            "return"
+          ],
+          "dataScope": "RELATED_STUDENT_RECORDS",
+          "buttons": [
+            "VIEW",
+            "COUNSELOR_APPROVE",
+            "RETURN"
+          ]
+        },
+        "COMPANY_HR": {
+          "actions": [
+            "read",
+            "invite_interview",
+            "offer",
+            "reject"
+          ],
+          "dataScope": "OWN_COMPANY",
+          "buttons": [
+            "VIEW",
+            "INVITE_INTERVIEW",
+            "OFFER",
+            "REJECT"
+          ]
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "read",
+            "override_return",
+            "export"
+          ],
+          "dataScope": "DEPARTMENT",
+          "buttons": [
+            "VIEW",
+            "RETURN",
+            "EXPORT"
+          ]
+        }
+      },
+      "fit_internship_application": {
+        "STUDENT": {
+          "actions": [
+            "create",
+            "read",
+            "update_draft",
+            "submit",
+            "resubmit",
+            "cancel"
+          ],
+          "dataScope": "SELF",
+          "buttons": [
+            "ADD",
+            "EDIT_DRAFT",
+            "SUBMIT",
+            "RESUBMIT",
+            "CANCEL",
+            "VIEW"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read",
+            "approve",
+            "return",
+            "reject"
+          ],
+          "dataScope": "RELATED_STUDENT_RECORDS",
+          "buttons": [
+            "VIEW",
+            "APPROVE",
+            "RETURN",
+            "REJECT"
+          ]
+        },
+        "COMPANY_HR": {
+          "actions": [
+            "read",
+            "confirm",
+            "return",
+            "reject"
+          ],
+          "dataScope": "OWN_COMPANY",
+          "buttons": [
+            "VIEW",
+            "CONFIRM",
+            "RETURN",
+            "REJECT"
+          ]
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "read",
+            "approve",
+            "return",
+            "reject",
+            "export"
+          ],
+          "dataScope": "DEPARTMENT",
+          "buttons": [
+            "VIEW",
+            "APPROVE",
+            "RETURN",
+            "REJECT",
+            "EXPORT"
+          ]
+        }
+      },
+      "fit_internship_log": {
+        "STUDENT": {
+          "actions": [
+            "create",
+            "read",
+            "update_draft",
+            "submit",
+            "resubmit"
+          ],
+          "dataScope": "SELF",
+          "buttons": [
+            "ADD",
+            "EDIT_DRAFT",
+            "SUBMIT",
+            "RESUBMIT",
+            "VIEW"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read",
+            "review",
+            "return"
+          ],
+          "dataScope": "RELATED_STUDENT_RECORDS",
+          "buttons": [
+            "VIEW",
+            "REVIEW",
+            "RETURN"
+          ]
+        },
+        "COMPANY_HR": {
+          "actions": [
+            "read"
+          ],
+          "dataScope": "OWN_COMPANY",
+          "buttons": [
+            "VIEW"
+          ]
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "read",
+            "export"
+          ],
+          "dataScope": "DEPARTMENT",
+          "buttons": [
+            "VIEW",
+            "EXPORT"
+          ]
+        }
+      },
+      "fit_tripartite_review": {
+        "STUDENT": {
+          "actions": [
+            "create",
+            "read",
+            "update_student_section",
+            "submit_student_section"
+          ],
+          "dataScope": "SELF",
+          "buttons": [
+            "ADD",
+            "EDIT_SELF_REVIEW",
+            "SUBMIT_SELF_REVIEW",
+            "VIEW"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read",
+            "update_counselor_section",
+            "complete"
+          ],
+          "dataScope": "RELATED_STUDENT_RECORDS",
+          "buttons": [
+            "VIEW",
+            "EDIT_COUNSELOR_REVIEW",
+            "COMPLETE_REVIEW"
+          ]
+        },
+        "COMPANY_HR": {
+          "actions": [
+            "read",
+            "update_company_section",
+            "submit_company_section"
+          ],
+          "dataScope": "OWN_COMPANY",
+          "buttons": [
+            "VIEW",
+            "EDIT_COMPANY_REVIEW",
+            "SUBMIT_COMPANY_REVIEW"
+          ]
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "read",
+            "archive",
+            "export"
+          ],
+          "dataScope": "DEPARTMENT",
+          "buttons": [
+            "VIEW",
+            "ARCHIVE",
+            "EXPORT"
+          ]
+        }
+      },
+      "fit_employment_destination": {
+        "STUDENT": {
+          "actions": [
+            "create",
+            "read",
+            "update_draft",
+            "submit"
+          ],
+          "dataScope": "SELF",
+          "buttons": [
+            "ADD",
+            "EDIT_DRAFT",
+            "SUBMIT",
+            "VIEW"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read",
+            "verify",
+            "return"
+          ],
+          "dataScope": "RELATED_STUDENT_RECORDS",
+          "buttons": [
+            "VIEW",
+            "VERIFY",
+            "RETURN"
+          ]
+        },
+        "COMPANY_HR": {
+          "actions": [],
+          "dataScope": "NONE"
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "read",
+            "verify",
+            "return",
+            "export"
+          ],
+          "dataScope": "DEPARTMENT",
+          "buttons": [
+            "VIEW",
+            "VERIFY",
+            "RETURN",
+            "EXPORT"
+          ]
+        }
+      },
+      "fit_policy": {
+        "STUDENT": {
+          "actions": [
+            "read"
+          ],
+          "dataScope": "PUBLIC",
+          "buttons": [
+            "VIEW"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read"
+          ],
+          "dataScope": "PUBLIC",
+          "buttons": [
+            "VIEW"
+          ]
+        },
+        "COMPANY_HR": {
+          "actions": [],
+          "dataScope": "NONE"
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "create",
+            "read",
+            "update",
+            "publish",
+            "expire",
+            "archive"
+          ],
+          "dataScope": "DEPARTMENT_OR_PUBLIC",
+          "buttons": [
+            "ADD",
+            "EDIT",
+            "SAVE",
+            "PUBLISH",
+            "EXPIRE",
+            "ARCHIVE",
+            "VIEW"
+          ],
+          "actionScopes": {
+            "create": "DEPARTMENT",
+            "read": "DEPARTMENT_OR_PUBLIC",
+            "update": "DEPARTMENT",
+            "publish": "DEPARTMENT",
+            "expire": "DEPARTMENT",
+            "archive": "DEPARTMENT"
+          },
+          "actionConditions": {
+            "update": "status == DRAFT",
+            "publish": "status == DRAFT",
+            "expire": "status == PUBLISHED",
+            "archive": "status IN (DRAFT, EXPIRED)"
+          }
+        }
+      },
+      "fit_ai_call_log": {
+        "STUDENT": {
+          "actions": [
+            "read_summary"
+          ],
+          "dataScope": "SELF",
+          "buttons": [
+            "VIEW_RESULT_SUMMARY"
+          ],
+          "fields": [
+            "callId",
+            "businessType",
+            "businessId",
+            "status",
+            "outputSummary",
+            "calledAt"
+          ]
+        },
+        "COUNSELOR": {
+          "actions": [
+            "read_summary"
+          ],
+          "dataScope": "RELATED_STUDENT_RECORDS",
+          "buttons": [
+            "VIEW_RESULT_SUMMARY"
+          ],
+          "fields": [
+            "callId",
+            "studentId",
+            "businessType",
+            "businessId",
+            "status",
+            "outputSummary",
+            "calledAt"
+          ]
+        },
+        "COMPANY_HR": {
+          "actions": [],
+          "dataScope": "NONE"
+        },
+        "DEPARTMENT_ADMIN": {
+          "actions": [
+            "read",
+            "verify",
+            "export"
+          ],
+          "dataScope": "DEPARTMENT",
+          "buttons": [
+            "VIEW",
+            "VERIFY",
+            "EXPORT"
+          ]
+        }
+      }
+    },
+    "fieldRules": [
+      {
+        "models": [
+          "fit_student_profile"
+        ],
+        "fields": [
+          "mobile",
+          "email",
+          "studentNo"
+        ],
+        "rule": "学生本人可查看原值；辅导员和院系管理员按职责查看；企业 HR 永不返回；列表默认脱敏。"
+      },
+      {
+        "models": [
+          "fit_student_profile"
+        ],
+        "fields": [
+          "studentId",
+          "studentUserId",
+          "studentNo",
+          "collegeCode",
+          "collegeName",
+          "majorName",
+          "classCode",
+          "counselorUserId",
+          "graduationYear"
+        ],
+        "rule": "全部由服务端从获授权的学生与组织绑定派生并冻结；学生不得修改决定辅导员、院系数据范围或流程处理人的字段。"
+      },
+      {
+        "models": [
+          "fit_resume"
+        ],
+        "fields": [
+          "contentText",
+          "structuredContent",
+          "sourceFile"
+        ],
+        "rule": "仅学生本人、负责辅导员、院系管理员和相关岗位的企业 HR 可读；企业 HR 只在申请有效期内读取。"
+      },
+      {
+        "models": [
+          "fit_company"
+        ],
+        "fields": [
+          "contactName",
+          "contactPhone",
+          "contactEmail"
+        ],
+        "rule": "仅本企业 HR、审核辅导员和院系管理员可读；学生端不显示联系人隐私字段。"
+      },
+      {
+        "models": [
+          "fit_ai_call_log"
+        ],
+        "fields": [
+          "inputSummary",
+          "outputSummary",
+          "resultJson",
+          "errorMessage"
+        ],
+        "rule": "日志列表默认展示脱敏摘要；完整结果仅院系管理员审计时按需查看。"
+      },
+      {
+        "models": [
+          "fit_job_application",
+          "fit_internship_application"
+        ],
+        "fields": [
+          "status",
+          "currentNode",
+          "currentHandlerRole",
+          "currentHandlerId",
+          "approvalRecords"
+        ],
+        "rule": "全部只读，只允许流程动作写入，禁止表单直接编辑状态和审批历史。"
+      },
+      {
+        "models": [
+          "fit_company"
+        ],
+        "fields": [
+          "reviewStatus",
+          "currentNode",
+          "currentHandlerRole",
+          "currentHandlerId",
+          "latestOpinion",
+          "approvalRecords"
+        ],
+        "rule": "审核状态和审计字段全部只读，仅允许流程动作写入。"
+      },
+      {
+        "models": [
+          "fit_job"
+        ],
+        "fields": [
+          "publishStatus",
+          "currentNode",
+          "currentHandlerRole",
+          "currentHandlerId",
+          "latestOpinion",
+          "approvalRecords"
+        ],
+        "rule": "审核状态和审计字段全部只读，仅允许流程动作写入。"
+      },
+      {
+        "models": [
+          "fit_job"
+        ],
+        "fields": [
+          "companyId",
+          "hrOwnerUserId",
+          "reviewDepartmentCode"
+        ],
+        "rule": "由服务端根据当前企业成员关系派生并冻结，禁止企业 HR 通过伪造负责人维护其他企业岗位。"
+      },
+      {
+        "models": [
+          "fit_company"
+        ],
+        "fields": [
+          "companyId",
+          "hrOwnerUserId",
+          "reviewDepartmentCode"
+        ],
+        "rule": "由服务端根据当前登录用户的企业与院系成员关系生成，客户端不得指定归属。"
+      },
+      {
+        "models": [
+          "fit_internship_application"
+        ],
+        "fields": [
+          "studentId",
+          "studentUserId",
+          "jobId",
+          "companyId",
+          "resumeId"
+        ],
+        "rule": "全部从已录用岗位申请派生并冻结，提交时再次校验整组关联字段一致。"
+      },
+      {
+        "models": [
+          "fit_policy"
+        ],
+        "fields": [
+          "status"
+        ],
+        "rule": "状态只允许发布、失效和归档服务操作写入，表单编辑不得直接修改。"
+      }
+    ],
+    "segregationAcceptanceCases": [
+      "学生 A 无法读取或修改学生 B 的档案、简历和申请。",
+      "辅导员只能看到负责班级或 counselorUserId 指向自己的学生数据。",
+      "企业 HR A 无法读取企业 B 的岗位、候选人和实习申请。",
+      "院系管理员 A 无法读取院系 B 的学生明细，只能读取获授权院系数据。",
+      "未发布岗位和已失效政策不会进入学生菜单或推荐服务。",
+      "所有无权限请求在服务端再次校验，不能只依赖菜单隐藏。"
+    ]
+  },
+  "workflows": [
+    {
+      "code": "fit_company_review",
+      "name": "企业信息审核",
+      "model": "fit_company",
+      "statusField": "reviewStatus",
+      "initialStatus": "DRAFT",
+      "terminalStatuses": [
+        "DISABLED"
+      ],
+      "nodes": {
+        "DRAFT": {
+          "label": "企业编辑",
+          "handlerRole": "COMPANY_HR",
+          "handlerResolver": "record.hrOwnerUserId"
+        },
+        "PENDING_REVIEW": {
+          "label": "辅导员/院系审核",
+          "handlerRole": [
+            "COUNSELOR",
+            "DEPARTMENT_ADMIN"
+          ],
+          "handlerResolver": "department.companyReviewer"
+        },
+        "APPROVED": {
+          "label": "已通过",
+          "handlerRole": null,
+          "handlerResolver": null
+        },
+        "REJECTED": {
+          "label": "退回企业修改",
+          "handlerRole": "COMPANY_HR",
+          "handlerResolver": "record.hrOwnerUserId"
+        },
+        "DISABLED": {
+          "label": "已停用",
+          "handlerRole": null,
+          "handlerResolver": null
+        }
+      },
+      "transitions": [
+        {
+          "action": "SUBMIT_REVIEW",
+          "label": "提交审核",
+          "from": [
+            "DRAFT",
+            "REJECTED"
+          ],
+          "to": "PENDING_REVIEW",
+          "roles": [
+            "COMPANY_HR"
+          ],
+          "permission": {
+            "action": "submit",
+            "actionByRole": {},
+            "buttons": [
+              "SUBMIT_REVIEW"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [
+            "companyName",
+            "industry",
+            "city",
+            "description"
+          ],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null
+        },
+        {
+          "action": "APPROVE",
+          "label": "审核通过",
+          "from": [
+            "PENDING_REVIEW"
+          ],
+          "to": "APPROVED",
+          "roles": [
+            "COUNSELOR",
+            "DEPARTMENT_ADMIN"
+          ],
+          "permission": {
+            "action": "review",
+            "actionByRole": {},
+            "buttons": [
+              "APPROVE"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "reviewOpinion=opinion",
+            "reviewedBy=actorId",
+            "reviewedAt=now"
+          ]
+        },
+        {
+          "action": "RETURN",
+          "label": "退回修改",
+          "from": [
+            "PENDING_REVIEW"
+          ],
+          "to": "REJECTED",
+          "roles": [
+            "COUNSELOR",
+            "DEPARTMENT_ADMIN"
+          ],
+          "permission": {
+            "action": "return",
+            "actionByRole": {},
+            "buttons": [
+              "RETURN"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "reviewOpinion=opinion",
+            "reviewedBy=actorId",
+            "reviewedAt=now"
+          ]
+        },
+        {
+          "action": "DISABLE",
+          "label": "停用企业",
+          "from": [
+            "APPROVED"
+          ],
+          "to": "DISABLED",
+          "roles": [
+            "DEPARTMENT_ADMIN"
+          ],
+          "permission": {
+            "action": "disable",
+            "actionByRole": {},
+            "buttons": [
+              "DISABLE"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "reviewOpinion=opinion",
+            "reviewedBy=actorId",
+            "reviewedAt=now"
+          ]
+        }
+      ]
+    },
+    {
+      "code": "fit_job_publish_review",
+      "name": "岗位发布审核",
+      "model": "fit_job",
+      "statusField": "publishStatus",
+      "initialStatus": "DRAFT",
+      "terminalStatuses": [
+        "CLOSED"
+      ],
+      "nodes": {
+        "DRAFT": {
+          "label": "企业编辑",
+          "handlerRole": "COMPANY_HR",
+          "handlerResolver": "record.hrOwnerUserId"
+        },
+        "PENDING_REVIEW": {
+          "label": "岗位审核",
+          "handlerRole": [
+            "COUNSELOR",
+            "DEPARTMENT_ADMIN"
+          ],
+          "handlerResolver": "department.jobReviewer"
+        },
+        "PUBLISHED": {
+          "label": "已发布",
+          "handlerRole": "COMPANY_HR",
+          "handlerResolver": "record.hrOwnerUserId"
+        },
+        "REJECTED": {
+          "label": "退回企业修改",
+          "handlerRole": "COMPANY_HR",
+          "handlerResolver": "record.hrOwnerUserId"
+        },
+        "CLOSED": {
+          "label": "已关闭",
+          "handlerRole": null,
+          "handlerResolver": null
+        }
+      },
+      "transitions": [
+        {
+          "action": "SUBMIT_REVIEW",
+          "label": "提交发布审核",
+          "from": [
+            "DRAFT",
+            "REJECTED"
+          ],
+          "to": "PENDING_REVIEW",
+          "roles": [
+            "COMPANY_HR"
+          ],
+          "permission": {
+            "action": "submit",
+            "actionByRole": {},
+            "buttons": [
+              "SUBMIT_REVIEW"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [
+            "companyId",
+            "title",
+            "jobType",
+            "city",
+            "salaryMin",
+            "salaryMax",
+            "salaryUnit",
+            "jd",
+            "skillRequirements",
+            "majorRequirements",
+            "applicationDeadline",
+            "headcount"
+          ],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null
+        },
+        {
+          "action": "APPROVE_PUBLISH",
+          "label": "审核并发布",
+          "from": [
+            "PENDING_REVIEW"
+          ],
+          "to": "PUBLISHED",
+          "roles": [
+            "COUNSELOR",
+            "DEPARTMENT_ADMIN"
+          ],
+          "permission": {
+            "action": "publish",
+            "actionByRole": {},
+            "buttons": [
+              "APPROVE_PUBLISH"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "recommendationEnabled=true",
+            "publishedAt=now",
+            "reviewOpinion=opinion",
+            "reviewedBy=actorId",
+            "reviewedAt=now"
+          ]
+        },
+        {
+          "action": "RETURN",
+          "label": "退回修改",
+          "from": [
+            "PENDING_REVIEW"
+          ],
+          "to": "REJECTED",
+          "roles": [
+            "COUNSELOR",
+            "DEPARTMENT_ADMIN"
+          ],
+          "permission": {
+            "action": "return",
+            "actionByRole": {},
+            "buttons": [
+              "RETURN"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "reviewOpinion=opinion",
+            "reviewedBy=actorId",
+            "reviewedAt=now"
+          ]
+        },
+        {
+          "action": "CLOSE",
+          "label": "关闭岗位",
+          "from": [
+            "PUBLISHED"
+          ],
+          "to": "CLOSED",
+          "roles": [
+            "COMPANY_HR",
+            "DEPARTMENT_ADMIN"
+          ],
+          "permission": {
+            "action": "close",
+            "actionByRole": {},
+            "buttons": [
+              "CLOSE"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [
+            "DEPARTMENT_ADMIN"
+          ],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "recommendationEnabled=false",
+            "reviewOpinion=opinion",
+            "reviewedBy=actorId",
+            "reviewedAt=now"
+          ]
+        }
+      ]
+    },
+    {
+      "code": "fit_job_application_flow",
+      "name": "岗位申请流程",
+      "model": "fit_job_application",
+      "statusField": "status",
+      "initialStatus": "DRAFT",
+      "terminalStatuses": [
+        "OFFERED",
+        "REJECTED",
+        "WITHDRAWN"
+      ],
+      "idempotency": {
+        "commandField": "createCommandId",
+        "createCommandField": "createCommandId",
+        "transitionCommandField": "approvalRecords.commandId",
+        "activeUniqueField": "activeApplicationKey",
+        "activeUniqueSource": [
+          "studentId",
+          "jobId"
+        ],
+        "nonReapplyableStatuses": [
+          "DRAFT",
+          "SUBMITTED",
+          "COMPANY_REVIEW",
+          "INTERVIEW",
+          "RETURNED",
+          "OFFERED"
+        ]
+      },
+      "nodes": {
+        "DRAFT": {
+          "label": "申请草稿",
+          "handlerRole": "STUDENT",
+          "handlerResolver": "record.studentUserId"
+        },
+        "SUBMITTED": {
+          "label": "辅导员审核",
+          "handlerRole": "COUNSELOR",
+          "handlerResolver": "student.counselorUserId"
+        },
+        "COMPANY_REVIEW": {
+          "label": "企业筛选",
+          "handlerRole": "COMPANY_HR",
+          "handlerResolver": "company.hrOwnerUserId"
+        },
+        "INTERVIEW": {
+          "label": "企业面试",
+          "handlerRole": "COMPANY_HR",
+          "handlerResolver": "company.hrOwnerUserId"
+        },
+        "OFFERED": {
+          "label": "已录用",
+          "handlerRole": null,
+          "handlerResolver": null
+        },
+        "REJECTED": {
+          "label": "未通过",
+          "handlerRole": null,
+          "handlerResolver": null
+        },
+        "RETURNED": {
+          "label": "退回学生修改",
+          "handlerRole": "STUDENT",
+          "handlerResolver": "record.studentUserId"
+        },
+        "WITHDRAWN": {
+          "label": "学生已撤回",
+          "handlerRole": null,
+          "handlerResolver": null
+        }
+      },
+      "transitions": [
+        {
+          "action": "SUBMIT",
+          "label": "一键申请",
+          "from": [
+            "DRAFT",
+            "RETURNED"
+          ],
+          "to": "SUBMITTED",
+          "roles": [
+            "STUDENT"
+          ],
+          "permission": {
+            "action": "submit",
+            "actionByRole": {},
+            "buttons": [
+              "SUBMIT",
+              "RESUBMIT"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [
+            "createCommandId",
+            "studentId",
+            "studentUserId",
+            "jobId",
+            "companyId",
+            "resumeId"
+          ],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "submittedAt=now",
+            "activeApplicationKey=applicationKey"
+          ]
+        },
+        {
+          "action": "COUNSELOR_APPROVE",
+          "label": "辅导员通过",
+          "from": [
+            "SUBMITTED"
+          ],
+          "to": "COMPANY_REVIEW",
+          "roles": [
+            "COUNSELOR"
+          ],
+          "permission": {
+            "action": "approve",
+            "actionByRole": {},
+            "buttons": [
+              "COUNSELOR_APPROVE"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null
+        },
+        {
+          "action": "RETURN",
+          "label": "退回学生",
+          "from": [
+            "SUBMITTED"
+          ],
+          "to": "RETURNED",
+          "roles": [
+            "COUNSELOR",
+            "DEPARTMENT_ADMIN"
+          ],
+          "permission": {
+            "action": "return",
+            "actionByRole": {
+              "DEPARTMENT_ADMIN": "override_return"
+            },
+            "buttons": [
+              "RETURN"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [
+            "DEPARTMENT_ADMIN"
+          ],
+          "handlerOverrideActorField": null
+        },
+        {
+          "action": "INVITE_INTERVIEW",
+          "label": "邀请面试",
+          "from": [
+            "COMPANY_REVIEW"
+          ],
+          "to": "INTERVIEW",
+          "roles": [
+            "COMPANY_HR"
+          ],
+          "permission": {
+            "action": "invite_interview",
+            "actionByRole": {},
+            "buttons": [
+              "INVITE_INTERVIEW"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null
+        },
+        {
+          "action": "OFFER",
+          "label": "发放录用",
+          "from": [
+            "COMPANY_REVIEW",
+            "INTERVIEW"
+          ],
+          "to": "OFFERED",
+          "roles": [
+            "COMPANY_HR"
+          ],
+          "permission": {
+            "action": "offer",
+            "actionByRole": {},
+            "buttons": [
+              "OFFER"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "completedAt=now"
+          ]
+        },
+        {
+          "action": "REJECT",
+          "label": "不通过",
+          "from": [
+            "COMPANY_REVIEW",
+            "INTERVIEW"
+          ],
+          "to": "REJECTED",
+          "roles": [
+            "COMPANY_HR"
+          ],
+          "permission": {
+            "action": "reject",
+            "actionByRole": {},
+            "buttons": [
+              "REJECT"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "completedAt=now",
+            "activeApplicationKey=null"
+          ]
+        },
+        {
+          "action": "WITHDRAW",
+          "label": "撤回申请",
+          "from": [
+            "DRAFT",
+            "SUBMITTED",
+            "RETURNED",
+            "COMPANY_REVIEW",
+            "INTERVIEW"
+          ],
+          "to": "WITHDRAWN",
+          "roles": [
+            "STUDENT"
+          ],
+          "permission": {
+            "action": "withdraw",
+            "actionByRole": {},
+            "buttons": [
+              "WITHDRAW"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [
+            "STUDENT"
+          ],
+          "handlerOverrideActorField": "studentUserId",
+          "sideEffects": [
+            "completedAt=now",
+            "activeApplicationKey=null"
+          ]
+        }
+      ]
+    },
+    {
+      "code": "fit_internship_approval",
+      "name": "实习申请审批",
+      "model": "fit_internship_application",
+      "statusField": "status",
+      "initialStatus": "DRAFT",
+      "terminalStatuses": [
+        "APPROVED",
+        "REJECTED",
+        "CANCELLED"
+      ],
+      "nodes": {
+        "DRAFT": {
+          "label": "学生填写",
+          "handlerRole": "STUDENT",
+          "handlerResolver": "record.studentUserId"
+        },
+        "COUNSELOR_REVIEW": {
+          "label": "辅导员审核",
+          "handlerRole": "COUNSELOR",
+          "handlerResolver": "student.counselorUserId"
+        },
+        "DEPARTMENT_REVIEW": {
+          "label": "院系审核",
+          "handlerRole": "DEPARTMENT_ADMIN",
+          "handlerResolver": "student.collegeCode.departmentApprover"
+        },
+        "COMPANY_CONFIRMATION": {
+          "label": "企业确认",
+          "handlerRole": "COMPANY_HR",
+          "handlerResolver": "company.hrOwnerUserId"
+        },
+        "APPROVED": {
+          "label": "审批完成",
+          "handlerRole": null,
+          "handlerResolver": null
+        },
+        "RETURNED": {
+          "label": "退回学生修改",
+          "handlerRole": "STUDENT",
+          "handlerResolver": "record.studentUserId"
+        },
+        "REJECTED": {
+          "label": "审批拒绝",
+          "handlerRole": null,
+          "handlerResolver": null
+        },
+        "CANCELLED": {
+          "label": "学生取消",
+          "handlerRole": null,
+          "handlerResolver": null
+        }
+      },
+      "transitions": [
+        {
+          "action": "SUBMIT",
+          "label": "学生提交",
+          "from": [
+            "DRAFT",
+            "RETURNED"
+          ],
+          "to": "COUNSELOR_REVIEW",
+          "roles": [
+            "STUDENT"
+          ],
+          "permission": {
+            "action": "submit",
+            "actionByRole": {},
+            "buttons": [
+              "SUBMIT",
+              "RESUBMIT"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [
+            "jobApplicationId",
+            "studentId",
+            "studentUserId",
+            "jobId",
+            "companyId",
+            "resumeId",
+            "internshipStartDate",
+            "internshipEndDate",
+            "weeklyAttendanceDays",
+            "workCity",
+            "safetyCommitmentAccepted"
+          ],
+          "requiredEquals": {
+            "safetyCommitmentAccepted": true
+          },
+          "linkedRecordRequirements": [
+            {
+              "contextKey": "jobApplication",
+              "statusField": "status",
+              "requiredStatus": "OFFERED",
+              "fieldMatches": {
+                "jobApplicationId": "applicationId",
+                "studentId": "studentId",
+                "studentUserId": "studentUserId",
+                "jobId": "jobId",
+                "companyId": "companyId",
+                "resumeId": "resumeId"
+              }
+            }
+          ],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "submittedAt=now"
+          ]
+        },
+        {
+          "action": "COUNSELOR_APPROVE",
+          "label": "辅导员通过",
+          "from": [
+            "COUNSELOR_REVIEW"
+          ],
+          "to": "DEPARTMENT_REVIEW",
+          "roles": [
+            "COUNSELOR"
+          ],
+          "permission": {
+            "action": "approve",
+            "actionByRole": {},
+            "buttons": [
+              "APPROVE"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null
+        },
+        {
+          "action": "DEPARTMENT_APPROVE",
+          "label": "院系通过",
+          "from": [
+            "DEPARTMENT_REVIEW"
+          ],
+          "to": "COMPANY_CONFIRMATION",
+          "roles": [
+            "DEPARTMENT_ADMIN"
+          ],
+          "permission": {
+            "action": "approve",
+            "actionByRole": {},
+            "buttons": [
+              "APPROVE"
+            ]
+          },
+          "commentRequired": false,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null
+        },
+        {
+          "action": "COMPANY_CONFIRM",
+          "label": "企业确认",
+          "from": [
+            "COMPANY_CONFIRMATION"
+          ],
+          "to": "APPROVED",
+          "roles": [
+            "COMPANY_HR"
+          ],
+          "permission": {
+            "action": "confirm",
+            "actionByRole": {},
+            "buttons": [
+              "CONFIRM"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "approvedAt=now"
+          ]
+        },
+        {
+          "action": "RETURN",
+          "label": "辅导员退回学生修改",
+          "from": [
+            "COUNSELOR_REVIEW"
+          ],
+          "to": "RETURNED",
+          "roles": [
+            "COUNSELOR"
+          ],
+          "permission": {
+            "action": "return",
+            "actionByRole": {},
+            "buttons": [
+              "RETURN"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "returnedFromNode=fromStatus"
+          ]
+        },
+        {
+          "action": "RETURN",
+          "label": "院系退回学生修改",
+          "from": [
+            "DEPARTMENT_REVIEW"
+          ],
+          "to": "RETURNED",
+          "roles": [
+            "DEPARTMENT_ADMIN"
+          ],
+          "permission": {
+            "action": "return",
+            "actionByRole": {},
+            "buttons": [
+              "RETURN"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "returnedFromNode=fromStatus"
+          ]
+        },
+        {
+          "action": "RETURN",
+          "label": "企业退回学生修改",
+          "from": [
+            "COMPANY_CONFIRMATION"
+          ],
+          "to": "RETURNED",
+          "roles": [
+            "COMPANY_HR"
+          ],
+          "permission": {
+            "action": "return",
+            "actionByRole": {},
+            "buttons": [
+              "RETURN"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null,
+          "sideEffects": [
+            "returnedFromNode=fromStatus"
+          ]
+        },
+        {
+          "action": "REJECT",
+          "label": "辅导员拒绝申请",
+          "from": [
+            "COUNSELOR_REVIEW"
+          ],
+          "to": "REJECTED",
+          "roles": [
+            "COUNSELOR"
+          ],
+          "permission": {
+            "action": "reject",
+            "actionByRole": {},
+            "buttons": [
+              "REJECT"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null
+        },
+        {
+          "action": "REJECT",
+          "label": "院系拒绝申请",
+          "from": [
+            "DEPARTMENT_REVIEW"
+          ],
+          "to": "REJECTED",
+          "roles": [
+            "DEPARTMENT_ADMIN"
+          ],
+          "permission": {
+            "action": "reject",
+            "actionByRole": {},
+            "buttons": [
+              "REJECT"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null
+        },
+        {
+          "action": "REJECT",
+          "label": "企业拒绝申请",
+          "from": [
+            "COMPANY_CONFIRMATION"
+          ],
+          "to": "REJECTED",
+          "roles": [
+            "COMPANY_HR"
+          ],
+          "permission": {
+            "action": "reject",
+            "actionByRole": {},
+            "buttons": [
+              "REJECT"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [],
+          "handlerOverrideActorField": null
+        },
+        {
+          "action": "CANCEL",
+          "label": "取消申请",
+          "from": [
+            "DRAFT",
+            "COUNSELOR_REVIEW",
+            "DEPARTMENT_REVIEW",
+            "COMPANY_CONFIRMATION",
+            "RETURNED"
+          ],
+          "to": "CANCELLED",
+          "roles": [
+            "STUDENT"
+          ],
+          "permission": {
+            "action": "cancel",
+            "actionByRole": {},
+            "buttons": [
+              "CANCEL"
+            ]
+          },
+          "commentRequired": true,
+          "requiredFields": [],
+          "requiredEquals": {},
+          "linkedRecordRequirements": [],
+          "handlerOverrideRoles": [
+            "STUDENT"
+          ],
+          "handlerOverrideActorField": "studentUserId"
+        }
+      ]
+    }
+  ]
+}
