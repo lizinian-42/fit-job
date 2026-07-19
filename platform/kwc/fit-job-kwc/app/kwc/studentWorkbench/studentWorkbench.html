@@ -1,0 +1,260 @@
+<template>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">FJ</span>
+        <div>
+          <strong>Fit Job</strong>
+          <small>AI 就业实习云平台</small>
+        </div>
+      </div>
+      <nav class="topnav" aria-label="学生端主导航">
+        <button class="nav-button nav-button--active">学生工作台</button>
+        <button class="nav-button" onclick={openResumeDiagnosis}>智能简历</button>
+        <button class="nav-button" onclick={openJobRecommendation}>岗位推荐</button>
+        <button class="nav-button" onclick={openInterviewTraining}>AI 面试</button>
+        <button class="nav-button" onclick={openPolicyQa}>政策问答</button>
+      </nav>
+      <div class="user">
+        <span class="avatar">林</span>
+        <div>
+          <strong>林知夏</strong>
+          <small>软件工程 · 2027 届</small>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="hero-kicker">✦ 晚上好，林知夏</p>
+          <h1>你的求职节奏很稳，再完成 3 项资料就能解锁更精准推荐</h1>
+          <p class="hero-description">
+            本周已新增 2 份岗位申请，前端开发方向平均匹配度达到 89%。建议优先完善项目量化结果，并完成下一轮技术面训练。
+          </p>
+          <div class="button-row">
+            <button class="button-light" onclick={openResumeDiagnosis}>继续优化简历 →</button>
+            <button class="button-secondary" onclick={refreshJobs}>刷新推荐岗位</button>
+          </div>
+        </div>
+        <div class="hero-progress">
+          <div class="progress-ring">
+            <div>
+              <strong>82%</strong>
+              <span>完善度</span>
+            </div>
+          </div>
+          <div>
+            <h2>个人档案</h2>
+            <p>待补充语言能力、到岗时间与项目成果指标</p>
+          </div>
+        </div>
+      </section>
+
+      <div class={noticeClass} role="status">
+        <span>{notice}</span>
+        <button onclick={closeNotice}>关闭</button>
+      </div>
+
+      <section class="metrics" aria-label="求职进度指标">
+        <article class="surface metric">
+          <p class="metric-label">档案完善度</p>
+          <p class="metric-value">82%</p>
+          <p class="metric-hint">还差 3 项资料</p>
+          <span class="metric-accent">档</span>
+        </article>
+        <article class="surface metric">
+          <p class="metric-label">岗位申请</p>
+          <p class="metric-value">12</p>
+          <p class="metric-hint">本周新增 2 份</p>
+          <span class="metric-accent">申</span>
+        </article>
+        <article class="surface metric">
+          <p class="metric-label">面试训练</p>
+          <p class="metric-value">6</p>
+          <p class="metric-hint">最近训练 2 天前</p>
+          <span class="metric-accent">面</span>
+        </article>
+        <article class="surface metric">
+          <p class="metric-label">待办事项</p>
+          <p class="metric-value">4</p>
+          <p class="metric-hint">其中 2 项临近截止</p>
+          <span class="metric-accent">待</span>
+        </article>
+      </section>
+
+      <div class="layout">
+        <div class="column">
+          <section class="surface section">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Quick Actions</p>
+                <h2>快捷入口</h2>
+              </div>
+              <span>从一个动作继续今天的求职准备</span>
+            </div>
+            <div class="actions">
+              <button class="action-card" onclick={openResumeDiagnosis}>
+                <span class="action-icon">简</span>
+                <strong>智能简历</strong>
+                <small>诊断岗位差距并生成优化建议</small>
+              </button>
+              <button class="action-card" onclick={openJobRecommendation}>
+                <span class="action-icon">岗</span>
+                <strong>岗位推荐</strong>
+                <small>发现与你画像高度匹配的机会</small>
+              </button>
+              <button class="action-card" onclick={openInterviewTraining}>
+                <span class="action-icon">面</span>
+                <strong>AI 面试</strong>
+                <small>按目标岗位进行多轮模拟训练</small>
+              </button>
+              <button class="action-card" onclick={openInternshipLog}>
+                <span class="action-icon">志</span>
+                <strong>实习日志</strong>
+                <small>记录实习进展与导师反馈</small>
+              </button>
+              <button class="action-card" onclick={openPolicyQa}>
+                <span class="action-icon">策</span>
+                <strong>政策问答</strong>
+                <small>查询就业补贴与协议政策</small>
+              </button>
+            </div>
+          </section>
+
+          <section class="surface section">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Recommended Jobs</p>
+                <h2>为你推荐</h2>
+              </div>
+              <button class="link-button" onclick={openJobRecommendation}>查看全部 →</button>
+            </div>
+            <div class="jobs">
+              <article class="job-card">
+                <div class="job-head">
+                  <div>
+                    <h3>前端开发实习生</h3>
+                    <p class="job-company">云途科技</p>
+                  </div>
+                  <span class="badge">91% 匹配</span>
+                </div>
+                <div class="job-meta">
+                  <span>杭州 · 3 天/周</span>
+                  <span>180-220 元/天</span>
+                </div>
+                <div class="tags">
+                  <span class="tag">React</span>
+                  <span class="tag">TypeScript</span>
+                  <span class="tag">ECharts</span>
+                </div>
+                <button class="button-secondary" onclick={openFirstJob}>查看岗位详情</button>
+              </article>
+              <article class="job-card">
+                <div class="job-head">
+                  <div>
+                    <h3>AI 产品实习生</h3>
+                    <p class="job-company">星环智能</p>
+                  </div>
+                  <span class="badge">87% 匹配</span>
+                </div>
+                <div class="job-meta">
+                  <span>上海 · 可转正</span>
+                  <span>200-250 元/天</span>
+                </div>
+                <div class="tags">
+                  <span class="tag">AI 产品</span>
+                  <span class="tag">Python</span>
+                  <span class="tag">原型设计</span>
+                </div>
+                <button class="button-secondary" onclick={openSecondJob}>查看岗位详情</button>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <aside class="column">
+          <section class="surface section profile-card">
+            <div class="profile-header">
+              <div>
+                <p>学生画像摘要</p>
+                <h2>林知夏</h2>
+              </div>
+              <span class="badge">积极求职中</span>
+            </div>
+            <div class="profile-list">
+              <div class="profile-row"><span>专业年级</span><strong>软件工程 · 2027 届</strong></div>
+              <div class="profile-row"><span>求职方向</span><strong>前端开发 / AI 产品</strong></div>
+              <div class="profile-row"><span>意向城市</span><strong>杭州 / 上海</strong></div>
+              <div class="profile-row"><span>期望薪资</span><strong>150-220 元/天</strong></div>
+            </div>
+            <p class="skill-title">核心技能</p>
+            <div class="tags profile-tags">
+              <span class="tag">React</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">Python</span>
+              <span class="tag">数据可视化</span>
+              <span class="tag">产品原型</span>
+            </div>
+            <button class="button-secondary">完善个人档案</button>
+          </section>
+
+          <section class="surface section">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Tasks</p>
+                <h2>待办事项</h2>
+                <p class="todo-summary">{pendingTodoText}</p>
+              </div>
+            </div>
+            <div class="todo-list">
+              <button class={todoResumeClass} onclick={toggleResumeTodo}>
+                <span class="todo-check">{todoResumeMark}</span>
+                <span>
+                  <strong>完善前端开发简历</strong>
+                  <small>补充项目成果中的量化指标</small>
+                  <time>今天 18:00</time>
+                </span>
+              </button>
+              <button class={todoJobClass} onclick={toggleJobTodo}>
+                <span class="todo-check">{todoJobMark}</span>
+                <span>
+                  <strong>投递云途科技前端实习生</strong>
+                  <small>岗位匹配度 91%，申请即将截止</small>
+                  <time>明天 12:00</time>
+                </span>
+              </button>
+              <button class={todoInterviewClass} onclick={toggleInterviewTodo}>
+                <span class="todo-check">{todoInterviewMark}</span>
+                <span>
+                  <strong>AI 模拟面试训练</strong>
+                  <small>完成技术面第 2 轮训练</small>
+                  <time>7 月 22 日</time>
+                </span>
+              </button>
+            </div>
+          </section>
+
+          <section class="surface section">
+            <p class="eyebrow">Activity</p>
+            <h2>最近动态</h2>
+            <div class="activity-list">
+              <div class="activity-item">
+                <span class="activity-dot">✓</span>
+                <div><strong>完成简历诊断</strong><small>今天 10:24</small></div>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot">收</span>
+                <div><strong>收藏岗位「前端开发实习生」</strong><small>昨天 20:18</small></div>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot">84</span>
+                <div><strong>完成技术面训练</strong><small>7 月 16 日</small></div>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</template>

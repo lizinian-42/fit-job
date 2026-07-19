@@ -1,0 +1,210 @@
+<template>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">FJ</span>
+        <div>
+          <strong>Fit Job</strong>
+          <small>AI 就业实习云平台</small>
+        </div>
+      </div>
+      <nav class="topnav" aria-label="学生端主导航">
+        <button class="nav-button" onclick={backToWorkbench}>学生工作台</button>
+        <button class="nav-button" onclick={openResumeDiagnosis}>智能简历</button>
+        <button class="nav-button nav-button--active">岗位推荐</button>
+        <button class="nav-button" onclick={openPolicyQa}>政策问答</button>
+      </nav>
+      <div class="user">
+        <span class="avatar">林</span>
+        <div>
+          <strong>林知夏</strong>
+          <small>软件工程 · 2027 届</small>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-heading">
+        <div>
+          <button class="back-button" onclick={backToWorkbench}>← 返回学生工作台</button>
+          <h1>岗位推荐与六维匹配</h1>
+          <p>参考 FirstFit-AI 的 JD 六维拟合经验，并融入岗位排序、硬性条件识别与申请闭环，帮助学生看清“为什么推荐”和“下一步怎么准备”。</p>
+        </div>
+        <div class="meta-panel">
+          <span>本次排序：{rankedAt}</span>
+          <strong>5 个模拟岗位</strong>
+        </div>
+      </div>
+
+      <section class="hero surface">
+        <div>
+          <p class="hero-kicker">Match Report</p>
+          <h2>前端开发方向平均匹配度 86.8%，建议优先投递高成长、低风险岗位</h2>
+          <p>参考 FirstFit-AI 的 JD 六维拟合：技能、经验胜任力、文化价值观、潜力敏锐度、动机驱动力、基础资质风险；再参考 ai-job-search 的 /rank 批量排序：诚实短板、硬性条件否决、截止日期加急。</p>
+        </div>
+        <div class="hero-score">
+          <strong>91</strong>
+          <span>最高匹配</span>
+        </div>
+      </section>
+
+      <div class={noticeClass} role="status">
+        <span>{notice}</span>
+        <button onclick={closeNotice}>关闭</button>
+      </div>
+
+      <div class="dashboard">
+        <section class="surface list-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Ranked Jobs</p>
+              <h2>推荐岗位列表</h2>
+            </div>
+            <button class="link-button" onclick={refreshRanking}>重新排序</button>
+          </div>
+
+          <div class="job-list">
+            <button class={jobOneClass} onclick={selectJobOne}>
+              <span class="rank">01</span>
+              <span class="job-main">
+                <strong>前端开发实习生</strong>
+                <small>云途科技 · 杭州 · 180-220 元/天</small>
+              </span>
+              <span class="score score--high">91</span>
+            </button>
+            <button class={jobTwoClass} onclick={selectJobTwo}>
+              <span class="rank">02</span>
+              <span class="job-main">
+                <strong>AI 产品实习生</strong>
+                <small>星环智能 · 上海 · 200-250 元/天</small>
+              </span>
+              <span class="score score--high">87</span>
+            </button>
+            <button class={jobThreeClass} onclick={selectJobThree}>
+              <span class="rank">03</span>
+              <span class="job-main">
+                <strong>数据可视化实习生</strong>
+                <small>数澜科技 · 杭州 · 160-210 元/天</small>
+              </span>
+              <span class="score score--mid">84</span>
+            </button>
+            <button class={jobFourClass} onclick={selectJobFour}>
+              <span class="rank">04</span>
+              <span class="job-main">
+                <strong>低代码实施顾问实习生</strong>
+                <small>金石云服 · 南京 · 150-180 元/天</small>
+              </span>
+              <span class="score score--mid">82</span>
+            </button>
+            <button class={jobFiveClass} onclick={selectJobFive}>
+              <span class="rank">05</span>
+              <span class="job-main">
+                <strong>Java 后端开发实习生</strong>
+                <small>辰海软件 · 苏州 · 170-220 元/天</small>
+              </span>
+              <span class="score score--risk">76</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="surface detail-section">
+          <div class="detail-head">
+            <div>
+              <p class="eyebrow">Selected Analysis</p>
+              <h2>{selectedTitle}</h2>
+              <p>{selectedCompany}</p>
+            </div>
+            <div class="selected-score">
+              <strong>{selectedScore}</strong>
+              <span>匹配分</span>
+            </div>
+          </div>
+
+          <div class="dimension-grid" aria-label="六维匹配评分">
+            <div class="dimension">
+              <div class="dimension-label"><span>技能匹配 · 25%</span><strong>{skillScore}</strong></div>
+              <div class={skillBarClass}><span></span></div>
+            </div>
+            <div class="dimension">
+              <div class="dimension-label"><span>经验与胜任力 · 20%</span><strong>{experienceScore}</strong></div>
+              <div class={experienceBarClass}><span></span></div>
+            </div>
+            <div class="dimension">
+              <div class="dimension-label"><span>文化价值观 · 15%</span><strong>{cultureScore}</strong></div>
+              <div class={intentBarClass}><span></span></div>
+            </div>
+            <div class="dimension">
+              <div class="dimension-label"><span>潜力与学习敏锐度 · 15%</span><strong>{potentialScore}</strong></div>
+              <div class={conditionBarClass}><span></span></div>
+            </div>
+            <div class="dimension">
+              <div class="dimension-label"><span>动机与工作驱动力 · 15%</span><strong>{motivationScore}</strong></div>
+              <div class={growthBarClass}><span></span></div>
+            </div>
+            <div class="dimension">
+              <div class="dimension-label"><span>基础资质与风险 · 10%</span><strong>{riskScore}</strong></div>
+              <div class={riskBarClass}><span></span></div>
+            </div>
+          </div>
+
+          <div class="method-strip">
+            <article>
+              <span>FirstFit-AI</span>
+              <strong>JD 理想画像 × 学生证据映射</strong>
+              <small>每个维度保留证据、缺口、风险和后续追问建议。</small>
+            </article>
+            <article>
+              <span>ai-job-search /rank</span>
+              <strong>批量岗位 triage 排序</strong>
+              <small>先低成本排序，申请前再做深度研究与二次校验。</small>
+            </article>
+            <article>
+              <span>Honesty Rule</span>
+              <strong>短板不包装成优势</strong>
+              <small>硬性条件不符合时触发 veto，而不是用高分掩盖风险。</small>
+            </article>
+          </div>
+
+          <div class="insight-grid">
+            <article class="insight insight--reason">
+              <span>推荐理由</span>
+              <p>{selectedReason}</p>
+            </article>
+            <article class="insight insight--gap">
+              <span>短板说明</span>
+              <p>{selectedGap}</p>
+            </article>
+            <article class="insight insight--prepare">
+              <span>面试准备建议</span>
+              <p>{selectedAdvice}</p>
+            </article>
+          </div>
+
+          <div class="apply-panel">
+            <div>
+              <strong>{applySummary}</strong>
+              <small>点击后进入岗位申请单，状态从草稿进入已提交，可由辅导员与企业 HR 继续处理。</small>
+            </div>
+            <button class={applyButtonClass} onclick={applySelectedJob}>{applyButtonText}</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="surface workflow">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Closed Loop</p>
+            <h2>岗位推荐到申请闭环</h2>
+          </div>
+          <span>用于苍穹表单 / Java 服务 / Agent 解释联动演示</span>
+        </div>
+        <div class="steps">
+          <div><span>1</span><strong>学生画像</strong><small>读取档案、简历、证据材料与求职动机</small></div>
+          <div><span>2</span><strong>JD 解构</strong><small>抽取硬技能、经验、文化、潜力和底线要求</small></div>
+          <div><span>3</span><strong>批量排序</strong><small>按权重加权，处理 veto、过期和加急标记</small></div>
+          <div><span>4</span><strong>申请闭环</strong><small>写入申请单，保留推荐理由、短板和追问建议</small></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</template>

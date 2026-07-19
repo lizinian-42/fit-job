@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Page>
+    <!-- KWC form ID, ensures name is unique within the app -->
+    <name>studentWorkbenchPage</name>
+    <!-- KWC form display name -->
+    <masterLabel>学生工作台</masterLabel>
+    <!-- Form template type, currently only supports oneregion -->
+    <template>oneregion</template>
+    <!-- isv will be auto-filled when deployed via scaffold -->
+    <isv></isv>
+    <!-- app will be auto-filled when created via scaffold -->
+    <app>fitjob</app>
+    <!-- Positive integer version number, increment by 1 on each upgrade, otherwise the page metadata upload will fail -->
+    <version>1</version>
+    <regions>
+        <region>
+            <name>region1</name>
+            <controls>
+                <control>
+                    <type>studentWorkbench</type>
+                    <name>studentWorkbenchMain</name>
+                </control>
+            </controls>
+        </region>
+    </regions>
+</Page>

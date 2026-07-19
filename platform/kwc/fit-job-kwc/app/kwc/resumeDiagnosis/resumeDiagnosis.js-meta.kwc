@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<KingdeeComponentBundle
+    xmlns="http://dev.kingdee.com/2025/10/metadata"
+>
+    <version>1</version>
+    <name>resumeDiagnosis</name>
+    <masterLabel>AI 简历诊断</masterLabel>
+    <description>简历选择、目标岗位、诊断得分、优劣势、关键词缺口与优化建议</description>
+    <isv></isv>
+    <app>fitjob</app>
+    <framework>lwc</framework>
+    <targets>
+        <target>KWCFormModel</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig>
+          <targets>KWCFormModel</targets>
+        </targetConfig>
+    </targetConfigs>
+</KingdeeComponentBundle>

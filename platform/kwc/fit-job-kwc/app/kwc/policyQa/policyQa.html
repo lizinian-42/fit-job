@@ -1,0 +1,228 @@
+<template>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">FJ</span>
+        <div>
+          <strong>Fit Job</strong>
+          <small>AI 就业实习云平台</small>
+        </div>
+      </div>
+      <nav class="topnav" aria-label="学生端主导航">
+        <button class="nav-button" onclick={backToWorkbench}>学生工作台</button>
+        <button class="nav-button" onclick={openResumeDiagnosis}>智能简历</button>
+        <button class="nav-button" onclick={openJobRecommendation}>岗位推荐</button>
+        <button class="nav-button nav-button--active">政策问答</button>
+      </nav>
+      <div class="user">
+        <span class="avatar">林</span>
+        <div>
+          <strong>林知夏</strong>
+          <small>杭州 · 2027 届毕业生</small>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-heading">
+        <div>
+          <button class="back-button" onclick={backToWorkbench}>← 返回学生工作台</button>
+          <h1>就业政策 RAG 问答</h1>
+          <p>围绕就业补贴、创业扶持、见习项目、基层就业等政策知识库回答问题。每条答案都展示来源引用，避免泛泛聊天和无来源建议。</p>
+        </div>
+        <div class="knowledge-card">
+          <span>知识库状态</span>
+          <strong>80 条政策 · 12 个地区</strong>
+          <small>回答携带 referenceInfos</small>
+        </div>
+      </div>
+
+      <section class="hero surface">
+        <div>
+          <p class="hero-kicker">Grounded Answers</p>
+          <h2>不是泛泛聊天，而是基于政策知识库的可引用问答</h2>
+          <p>页面模拟苍穹 RAG 知识库召回、Agent 组织答案、Source Verifier 复核来源的完整链路，便于答辩时说明 AI 可信度设计。</p>
+        </div>
+        <div class="hero-stack">
+          <div><strong>3</strong><span>带来源回答</span></div>
+          <div><strong>4</strong><span>政策分类入口</span></div>
+        </div>
+      </section>
+
+      <div class={noticeClass} role="status">
+        <span>{notice}</span>
+        <button onclick={closeNotice}>关闭</button>
+      </div>
+
+      <section class="surface categories">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Policy Categories</p>
+            <h2>政策分类入口</h2>
+          </div>
+          <span>切换分类会更新推荐提问与个性化推送说明</span>
+        </div>
+        <div class="category-grid">
+          <button class={subsidyClass} onclick={selectSubsidy}>
+            <span>补</span>
+            <strong>就业补贴</strong>
+            <small>租房补贴、求职创业补贴、社保补贴</small>
+          </button>
+          <button class={startupClass} onclick={selectStartup}>
+            <span>创</span>
+            <strong>创业扶持</strong>
+            <small>创业担保贷款、场地补贴、税费减免</small>
+          </button>
+          <button class={traineeClass} onclick={selectTrainee}>
+            <span>见</span>
+            <strong>见习项目</strong>
+            <small>青年见习、实习基地、见习补助</small>
+          </button>
+          <button class={grassrootsClass} onclick={selectGrassroots}>
+            <span>基</span>
+            <strong>基层就业</strong>
+            <small>西部计划、三支一扶、基层服务期</small>
+          </button>
+        </div>
+      </section>
+
+      <div class="qa-layout">
+        <section class="surface chat-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">RAG Conversation</p>
+              <h2>对话式问答区域</h2>
+            </div>
+            <span>{activeCategoryText}</span>
+          </div>
+
+          <div class="quick-prompts">
+            <button onclick={askPromptOne}>杭州应届生能申请哪些就业补贴？</button>
+            <button onclick={askPromptTwo}>创业担保贷款需要哪些材料？</button>
+            <button onclick={askPromptThree}>见习补贴和实习工资能同时享受吗？</button>
+          </div>
+
+          <div class="composer">
+            <label for="policy-question">输入政策问题</label>
+            <div>
+              <input id="policy-question" value={draftQuestion} oninput={handleQuestionInput} placeholder="例如：软件工程应届生在杭州就业有什么补贴？" />
+              <button class="button-primary" onclick={sendQuestion}>知识库检索</button>
+            </div>
+          </div>
+
+          <div class="answer-list">
+            <article class="answer-card">
+              <div class="message-head">
+                <span>Q1</span>
+                <div>
+                  <strong>杭州应届生能申请哪些就业补贴？</strong>
+                  <small>召回政策：高校毕业生就业补贴、租房补贴</small>
+                </div>
+              </div>
+              <p>如果你是毕业 2 年内的高校毕业生，在杭州与用人单位签订劳动合同并依法参保，可重点关注就业补贴、生活补贴与租房补贴。系统建议先核对毕业时间、社保缴纳地、劳动合同主体和是否已享受同类补贴。</p>
+              <div class="reference-row">
+                <span>referenceInfos</span>
+                <a href="https://example.gov.cn/hangzhou-employment-subsidy" target="_blank" rel="noreferrer">杭州市高校毕业生就业补贴政策</a>
+              </div>
+            </article>
+
+            <article class="answer-card">
+              <div class="message-head">
+                <span>Q2</span>
+                <div>
+                  <strong>创业担保贷款需要哪些材料？</strong>
+                  <small>召回政策：高校毕业生创业担保贷款、一次性创业补贴</small>
+                </div>
+              </div>
+              <p>通常需要身份证明、毕业证明或学籍证明、营业执照、创业项目说明、贷款申请表和担保材料。不同地区对担保方式、贴息比例和贷款额度有差异，提交前应以当地人社部门最新办事指南为准。</p>
+              <div class="reference-row">
+                <span>referenceInfos</span>
+                <a href="https://example.gov.cn/startup-loan-guide" target="_blank" rel="noreferrer">高校毕业生创业担保贷款办事指南</a>
+              </div>
+            </article>
+
+            <article class="answer-card">
+              <div class="message-head">
+                <span>Q3</span>
+                <div>
+                  <strong>见习补贴和实习工资能同时享受吗？</strong>
+                  <small>召回政策：青年就业见习补贴、见习基地管理办法</small>
+                </div>
+              </div>
+              <p>就业见习补贴通常发放给符合条件的见习基地或见习人员，是否能与实习工资并行取决于当地见习身份认定、补贴对象和资金发放规则。建议确认岗位是否属于备案见习基地，并保留见习协议和考勤证明。</p>
+              <div class="reference-row">
+                <span>referenceInfos</span>
+                <a href="https://example.gov.cn/youth-trainee-program" target="_blank" rel="noreferrer">青年就业见习项目管理办法</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <aside class="side-column">
+          <section class="surface source-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Source Cards</p>
+                <h2>来源引用卡片</h2>
+              </div>
+            </div>
+            <div class="source-list">
+              <article>
+                <strong>杭州市高校毕业生就业补贴政策</strong>
+                <span>地区：杭州</span>
+                <span>适用对象：毕业 2 年内高校毕业生</span>
+                <a href="https://example.gov.cn/hangzhou-employment-subsidy" target="_blank" rel="noreferrer">来源链接</a>
+              </article>
+              <article>
+                <strong>高校毕业生创业担保贷款办事指南</strong>
+                <span>地区：浙江省</span>
+                <span>适用对象：高校毕业生创业者</span>
+                <a href="https://example.gov.cn/startup-loan-guide" target="_blank" rel="noreferrer">来源链接</a>
+              </article>
+              <article>
+                <strong>青年就业见习项目管理办法</strong>
+                <span>地区：全国/地方细则</span>
+                <span>适用对象：离校未就业毕业生</span>
+                <a href="https://example.gov.cn/youth-trainee-program" target="_blank" rel="noreferrer">来源链接</a>
+              </article>
+            </div>
+          </section>
+
+          <section class="surface push-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Personalized Push</p>
+                <h2>个性化政策推送</h2>
+              </div>
+            </div>
+            <div class="push-list">
+              <article>
+                <span class="push-dot">高</span>
+                <div><strong>{pushOneTitle}</strong><small>{pushOneDesc}</small></div>
+              </article>
+              <article>
+                <span class="push-dot push-dot--blue">中</span>
+                <div><strong>{pushTwoTitle}</strong><small>{pushTwoDesc}</small></div>
+              </article>
+              <article>
+                <span class="push-dot push-dot--gray">低</span>
+                <div><strong>{pushThreeTitle}</strong><small>{pushThreeDesc}</small></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="surface guardrail-panel">
+            <p class="eyebrow">Answer Guardrails</p>
+            <h2>可信问答护栏</h2>
+            <ul>
+              <li>无知识库来源时提示“未检索到依据”。</li>
+              <li>答案必须展示政策标题、地区、适用对象和链接。</li>
+              <li>Source Verifier 检查引用是否支撑结论。</li>
+              <li>问答记录保存 referenceInfos 便于追溯。</li>
+            </ul>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</template>
