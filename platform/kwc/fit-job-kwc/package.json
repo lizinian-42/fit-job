@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "cross-env NODE_ENV=production node scripts/build.js",
+    "build:preview": "cross-env NODE_ENV=production STANDALONE_PREVIEW=true rollup -c rollup.config.js",
     "build:frontend": "cross-env NODE_ENV=production node scripts/buildFrontend.js",
     "build:controller": "cross-env NODE_ENV=production node scripts/buildController.js",
     "dev": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",

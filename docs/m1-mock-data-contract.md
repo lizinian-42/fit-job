@@ -7,8 +7,12 @@
 | 数据集 | 主要用途 | Java DTO 参考 | 苍穹模型参考 |
 | --- | --- | --- | --- |
 | `studentProfile` | 学生画像、求职准备度、任务与成长阶段 | `StudentProfileDTO` | 学生档案、成长任务 |
+| `companies` | 匿名企业主体、行业、规模与审核状态 | `CompanyDTO` | 企业档案 |
 | `jobPostings` | 岗位池、六维匹配、短板与行动建议 | `JobPostingDTO` | 岗位库、岗位申请 |
+| `resumeRecords` | 简历版本、目标岗位、默认版本与诊断状态 | `ResumeDTO` | 简历版本 |
 | `resumeDiagnosis` | 关键词覆盖、结构诊断与改写建议 | `ResumeDiagnosisReportDTO` | 简历版本、诊断报告 |
+| `jobApplications` | 岗位投递、当前节点与审批轨迹 | `JobApplicationDTO` | 岗位申请、审批记录 |
+| `internshipApplications` | 实习周期、安全承诺与院系审批流程 | `InternshipApplicationDTO` | 实习申请、审批记录 |
 | `interviewSession` | 面试类型、多轮问题、示例回答与四维报告 | `InterviewSessionDTO`、`InterviewReportDTO` | 面试场次、面试报告 |
 | `dashboardSnapshot` | 就业指标、趋势、行业、薪资与风险学生 | `EmploymentDashboardDTO` | 指标快照、风险跟进 |
 | `policyQaCases` | RAG 问答、答案与 `referenceInfos` | `PolicyAnswerDTO` | 政策知识条目、问答记录 |
@@ -40,4 +44,4 @@ cd platform/kwc/fit-job-kwc
 npm run test
 ```
 
-校验脚本会检查路由覆盖、跨数据集引用、六维匹配结构、面试报告维度、政策来源和常见个人信息格式。
+校验脚本会检查路由覆盖、企业/岗位/简历/申请之间的引用关系、六维匹配结构、面试报告维度、政策来源和常见个人信息格式。

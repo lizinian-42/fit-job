@@ -13,6 +13,7 @@ import { rimrafSync } from 'rimraf';
 
 const isDebugBuild = process.env.DEBUG_BUILD === 'true';
 const isProdBuild = process.env.NODE_ENV === 'production' && !isDebugBuild;
+const isStandalonePreview = process.env.STANDALONE_PREVIEW === 'true';
 const isWin = process.platform === 'win32';
 const useRobocopy = isWin && (process.env.COPY_ICONS_FULL !== 'false');
 
@@ -224,15 +225,23 @@ function kwcWrapper(options) {
 export default (args) => {
     // 开发模式使用单一入口以支持开发服务器
     const isDev = args.watch && process.env.NODE_ENV === 'development';
+    const outputDir = isStandalonePreview ? 'preview-dist' : 'dist';
 
     const kwcBundle = {
-        input: isDev ? 'app/kwc/main.js' : getComponentEntries(),
+        input: (isDev || isStandalonePreview) ? 'app/kwc/main.js' : getComponentEntries(),
         output: isDev ? [
             {
                 dir: 'dist',
                 format: 'esm',
                 entryFileNames: 'index.js',
                 sourcemap: true
+            }
+        ] : isStandalonePreview ? [
+            {
+                dir: outputDir,
+                format: 'esm',
+                entryFileNames: 'assets/index.js',
+                sourcemap: false
             }
         ] : [
             {
@@ -247,8 +256,8 @@ export default (args) => {
         plugins: [
             // 🔥 仅生产 build 清 dist
             cleanDist({
-                dir: 'dist',
-                enabled: !args.watch && !isDev && !process.env.TARGET_COMPONENT
+                dir: outputDir,
+                enabled: isStandalonePreview || (!args.watch && !isDev && !process.env.TARGET_COMPONENT)
             }),
             alias({
                 entries: [
@@ -257,12 +266,13 @@ export default (args) => {
             }),
             replace({
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+                'process.env.STANDALONE_PREVIEW': JSON.stringify(process.env.STANDALONE_PREVIEW || 'false'),
                 preventAssignment: true
             }),
             // 确保在 kwc() 之前加上 watchCss
             (isDev || isDebugBuild) && watchCss(),
             // 生产模式注入 BasePath
-            !isDev && injectBasePath(),
+            !isDev && !isStandalonePreview && injectBasePath(),
             kwcWrapper({ rootDir: 'app' }),
             replaceTagNames(),
             resolve(),
@@ -282,12 +292,41 @@ export default (args) => {
                     isDev && { src: 'node_modules/@kdcloudjs/kingdee-base-components/dist/index.css', dest: 'dist' },
                     isDev && { src: 'app/kwc/logo.png', dest: 'dist' },
                     isDev && { src: 'node_modules/@kdcloudjs/shoelace/dist/themes/light.css', dest: 'dist/themes' },
+                    isStandalonePreview && { src: 'app/kwc/static/favicon.svg', dest: outputDir },
                     !isDev && process.env.TARGET_COMPONENT && {
                         src: 'app/kwc/static/*',
                         dest: `dist/kwc/${process.env.TARGET_COMPONENT}`
                     }
                 ].filter(Boolean)
             }),
+            isStandalonePreview && {
+                name: 'standalone-preview-index',
+                generateBundle() {
+                    this.emitFile({
+                        type: 'asset',
+                        fileName: 'index.html',
+                        source: `<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Fit Job AI 就业实习云平台第一阶段 KWC 演示预览">
+    <title>Fit Job · M1 KWC Preview</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { min-height: 100%; margin: 0; background: #f5f8fc; }
+      body, input, textarea, select, button { font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif; }
+      button, input, textarea, select { font: inherit; }
+    </style>
+  </head>
+  <body>
+    <script type="module" src="./assets/index.js"></script>
+  </body>
+</html>`
+                    });
+                }
+            },
             isDev && {
                 name: 'ensure-index-html',
                 generateBundle(options) {
@@ -381,7 +420,7 @@ export default (args) => {
                 }
             })
         ].filter(Boolean),
-        external: isDev ? [] : ['@kdcloudjs/kwc'],
+        external: (isDev || isStandalonePreview) ? [] : ['@kdcloudjs/kwc'],
         // 警告处理
         onwarn(warning, warn) {
             // 忽略某些警告

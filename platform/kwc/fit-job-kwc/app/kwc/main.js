@@ -10,8 +10,12 @@ import policyQa from './policyQa/policyQa.js';
 import employmentDashboard from './employmentDashboard/employmentDashboard.js';
 import { demoRoutes, getDemoRoute } from './demoData.js';
 
-setBasePath('/');
 window.__FIT_JOB_STANDALONE__ = true;
+const isStandalonePreview = process.env.STANDALONE_PREVIEW === 'true';
+const shoelaceBasePath = isStandalonePreview
+    ? new URL('./shoelace', document.baseURI).href.replace(/\/$/, '')
+    : '/';
+setBasePath(shoelaceBasePath);
 
 let currentElement;
 

@@ -1,59 +1,15 @@
 import { KingdeeElement, track } from '@kdcloudjs/kwc';
-import { studentProfile } from '../demoData.js';
+import { jobPostings, studentProfile } from '../demoData.js';
 import { navigateTo } from '../demoNavigation.js';
 
-const JOBS = {
-    one: {
-        title: '前端开发实习生',
-        company: '示例科技 A · 杭州 · 180-220 元/天 · 每周 3 天',
-        score: 91,
-        dimensions: [94, 88, 92, 90, 86, 84],
-        reason: 'React、TypeScript 与数据可视化经历命中 JD 的核心硬技能；项目交付经历可映射到经验胜任力，城市、节奏和成长方向均匹配。',
-        gap: '单元测试、性能监控和 CI/CD 还缺少可验证证据，不能为了匹配 JD 直接塞关键词。',
-        advice: '准备 2 个可量化 STAR 案例：一个讲首屏性能优化，一个讲复杂表格或图表交互，并补齐工程质量追问。',
-        applied: false
-    },
-    two: {
-        title: 'AI 产品实习生',
-        company: '示例智能 B · 上海 · 200-250 元/天 · 可转正',
-        score: 87,
-        dimensions: [82, 86, 92, 88, 94, 78],
-        reason: 'AI 产品原型、需求分析和技术背景形成互补，文化价值观与探索型团队较贴合，工作驱动力分数高。',
-        gap: '商业化指标和产品数据分析经验偏少，用户研究样本量尚未形成证据。',
-        advice: '准备“用户反馈到原型迭代”的案例，说明如何衡量 AI 功能准确率、采纳率与留存。',
-        applied: false
-    },
-    three: {
-        title: '数据可视化实习生',
-        company: '示例数据 C · 杭州 · 160-210 元/天 · 远程友好',
-        score: 84,
-        dimensions: [86, 84, 88, 82, 80, 84],
-        reason: 'ECharts、就业驾驶舱和前端交互经历与岗位需求贴合，基础资质风险低，可较快承担看板组件开发。',
-        gap: '数据建模、指标口径和大屏性能优化经历不够突出，需要补强数据侧沟通证据。',
-        advice: '复盘就业驾驶舱指标设计，准备行业分布、薪资区间和就业率趋势三类图表的口径说明。',
-        applied: false
-    },
-    four: {
-        title: '低代码实施顾问实习生',
-        company: '示例云服 D · 南京 · 150-180 元/天 · 项目制',
-        score: 82,
-        dimensions: [78, 80, 86, 88, 84, 76],
-        reason: '苍穹低代码项目经历与平台配置意识加分，适合参与表单、流程、权限模型和客户化页面落地。',
-        gap: '企业实施、客户沟通和业务蓝图文档经验较少，跨城市现场交付为风险项。',
-        advice: '准备“岗位申请表单 + 四角色权限矩阵”的设计说明，突出你如何把业务规则映射到平台能力。',
-        applied: false
-    },
-    five: {
-        title: 'Java 后端开发实习生',
-        company: '示例软件 E · 苏州 · 170-220 元/天 · Java 17',
-        score: 76,
-        dimensions: [70, 74, 72, 82, 78, 62],
-        reason: '具备 TypeScript 与部分 Java 基础，若聚焦 AI 网关或匹配服务方向，仍有成长空间。',
-        gap: 'Spring Boot、JUnit、数据库事务和接口设计证据不足；若 JD 硬性要求后端生产经验，应触发谨慎或否决。',
-        advice: '先补一个 Java 服务小项目，准备 DTO、Bean Validation、单元测试和异常处理四类基础问题。',
-        applied: false
+const JOBS = Object.fromEntries(jobPostings.map((job) => [
+    job.key,
+    {
+        ...job,
+        company: `${job.companyName} · ${job.city} · ${job.compensation} · ${job.attendance}`,
+        score: job.matchScore
     }
-};
+]));
 
 export default class JobRecommendation extends KingdeeElement {
     @track selectedJobId = 'one';

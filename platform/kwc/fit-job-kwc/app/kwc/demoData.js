@@ -59,17 +59,62 @@ export const demoRoutes = [
 
 export const studentProfile = {
     studentId: 'STU-DEMO-001',
+    studentUserId: 'USER-DEMO-STUDENT-001',
     displayName: '学生 A',
     avatarText: 'A',
+    collegeCode: 'COLLEGE-DEMO-SE',
     collegeName: '软件工程学院',
     majorName: '软件工程',
+    classCode: 'CLASS-DEMO-SE-2027-01',
+    counselorUserId: 'USER-DEMO-COUNSELOR-001',
     graduationYear: 2027,
+    profileStatus: 'ACTIVE',
     targetRoles: ['前端开发实习生', 'AI 产品实习生'],
     preferredCities: ['杭州', '上海'],
+    expectedSalaryMin: 150,
+    expectedSalaryMax: 250,
+    availableFrom: '2026-09-01',
+    weeklyAttendanceDays: 3,
     profileCompletion: 82,
     readinessScore: 84,
     employmentStatus: 'ACTIVE_SEARCH',
     skillTags: ['React', 'TypeScript', '数据可视化', '产品原型'],
+    educationBackground: [
+        {
+            educationId: 'EDU-DEMO-001',
+            schoolName: '示例大学',
+            collegeName: '软件工程学院',
+            majorName: '软件工程',
+            degree: 'BACHELOR',
+            startDate: '2023-09-01',
+            endDate: '2027-06-30',
+            gpa: 3.62,
+            rankPercent: 18
+        }
+    ],
+    certificates: [
+        {
+            certificateId: 'CERT-DEMO-001',
+            certificateName: '大学英语六级（模拟）',
+            issuer: '示例考试机构',
+            obtainedAt: '2025-06-15',
+            credentialNo: 'MOCK-CERT-001'
+        }
+    ],
+    experiences: [
+        {
+            experienceId: 'EXP-DEMO-001',
+            type: 'PROJECT',
+            name: 'Fit Job 就业服务原型',
+            organizationName: '示例大学课程项目组',
+            role: '前端开发与产品设计',
+            startDate: '2026-04-01',
+            endDate: '2026-07-19',
+            description: '负责学生工作台、岗位推荐和就业驾驶舱的 KWC 原型。',
+            achievements: '完成六条演示故事线并统一匿名 Mock 数据契约。',
+            skillTags: ['KWC', 'JavaScript', '数据可视化']
+        }
+    ],
     tasks: [
         {
             taskId: 'TASK-DEMO-001',
@@ -104,15 +149,84 @@ export const studentProfile = {
     ]
 };
 
+export const companies = [
+    {
+        companyId: 'COMPANY-DEMO-A',
+        companyCode: 'MOCK-COMPANY-A',
+        companyName: '示例科技 A',
+        industry: '互联网/软件',
+        companyScale: '100_499',
+        city: '杭州',
+        description: '提供企业数字化协作产品的虚构演示企业。',
+        hrOwnerUserId: 'USER-DEMO-HR-A',
+        reviewStatus: 'APPROVED'
+    },
+    {
+        companyId: 'COMPANY-DEMO-B',
+        companyCode: 'MOCK-COMPANY-B',
+        companyName: '示例智能 B',
+        industry: '人工智能',
+        companyScale: '50_99',
+        city: '上海',
+        description: '专注 AI 产品原型与数据服务的虚构演示企业。',
+        hrOwnerUserId: 'USER-DEMO-HR-B',
+        reviewStatus: 'APPROVED'
+    },
+    {
+        companyId: 'COMPANY-DEMO-C',
+        companyCode: 'MOCK-COMPANY-C',
+        companyName: '示例数据 C',
+        industry: '数据服务',
+        companyScale: '100_499',
+        city: '杭州',
+        description: '提供可视化与数据治理服务的虚构演示企业。',
+        hrOwnerUserId: 'USER-DEMO-HR-C',
+        reviewStatus: 'APPROVED'
+    },
+    {
+        companyId: 'COMPANY-DEMO-D',
+        companyCode: 'MOCK-COMPANY-D',
+        companyName: '示例云服 D',
+        industry: '企业服务',
+        companyScale: '500_999',
+        city: '南京',
+        description: '提供低代码实施服务的虚构演示企业。',
+        hrOwnerUserId: 'USER-DEMO-HR-D',
+        reviewStatus: 'APPROVED'
+    },
+    {
+        companyId: 'COMPANY-DEMO-E',
+        companyCode: 'MOCK-COMPANY-E',
+        companyName: '示例软件 E',
+        industry: '软件开发',
+        companyScale: '100_499',
+        city: '苏州',
+        description: '提供 Java 企业应用研发的虚构演示企业。',
+        hrOwnerUserId: 'USER-DEMO-HR-E',
+        reviewStatus: 'APPROVED'
+    }
+];
+
 export const jobPostings = [
     {
         key: 'one',
         jobId: 'JOB-DEMO-FE-001',
+        companyId: companies[0].companyId,
         title: '前端开发实习生',
-        companyName: '示例科技 A',
+        companyName: companies[0].companyName,
+        jobType: 'INTERNSHIP',
         city: '杭州',
         compensation: '180-220 元/天',
         attendance: '每周 3 天',
+        salaryMin: 180,
+        salaryMax: 220,
+        salaryUnit: 'DAY',
+        jd: '参与企业协作产品的前端功能开发、性能优化和数据可视化建设。',
+        skillRequirements: ['React', 'TypeScript', '单元测试', '性能优化'],
+        majorRequirements: ['软件工程', '计算机科学与技术'],
+        applicationDeadline: '2026-09-30',
+        headcount: 3,
+        publishStatus: 'PUBLISHED',
         matchScore: 91,
         dimensions: [94, 88, 92, 90, 86, 84],
         reason: 'React、TypeScript 与数据可视化经历命中 JD 核心技能，项目交付证据与岗位成长路径匹配。',
@@ -123,11 +237,22 @@ export const jobPostings = [
     {
         key: 'two',
         jobId: 'JOB-DEMO-PM-002',
+        companyId: companies[1].companyId,
         title: 'AI 产品实习生',
-        companyName: '示例智能 B',
+        companyName: companies[1].companyName,
+        jobType: 'INTERNSHIP',
         city: '上海',
         compensation: '200-250 元/天',
         attendance: '可转正',
+        salaryMin: 200,
+        salaryMax: 250,
+        salaryUnit: 'DAY',
+        jd: '参与 AI 产品需求分析、原型设计、数据复盘和用户反馈闭环。',
+        skillRequirements: ['需求分析', '产品原型', '数据分析', 'AI 基础'],
+        majorRequirements: ['软件工程', '信息管理', '计算机科学与技术'],
+        applicationDeadline: '2026-10-15',
+        headcount: 2,
+        publishStatus: 'PUBLISHED',
         matchScore: 87,
         dimensions: [82, 86, 92, 88, 94, 78],
         reason: 'AI 产品原型、需求分析和技术背景形成互补，探索型项目经历与岗位动机匹配。',
@@ -138,11 +263,22 @@ export const jobPostings = [
     {
         key: 'three',
         jobId: 'JOB-DEMO-DV-003',
+        companyId: companies[2].companyId,
         title: '数据可视化实习生',
-        companyName: '示例数据 C',
+        companyName: companies[2].companyName,
+        jobType: 'INTERNSHIP',
         city: '杭州',
         compensation: '160-210 元/天',
         attendance: '远程友好',
+        salaryMin: 160,
+        salaryMax: 210,
+        salaryUnit: 'DAY',
+        jd: '参与数据指标梳理、可视化组件开发和驾驶舱性能优化。',
+        skillRequirements: ['JavaScript', 'ECharts', '数据建模'],
+        majorRequirements: ['软件工程', '数据科学'],
+        applicationDeadline: '2026-09-20',
+        headcount: 2,
+        publishStatus: 'PUBLISHED',
         matchScore: 84,
         dimensions: [86, 84, 88, 82, 80, 84],
         reason: '图表开发、就业驾驶舱和前端交互经历与岗位任务贴合。',
@@ -153,11 +289,22 @@ export const jobPostings = [
     {
         key: 'four',
         jobId: 'JOB-DEMO-LC-004',
+        companyId: companies[3].companyId,
         title: '低代码实施顾问实习生',
-        companyName: '示例云服 D',
+        companyName: companies[3].companyName,
+        jobType: 'INTERNSHIP',
         city: '南京',
         compensation: '150-180 元/天',
         attendance: '项目制',
+        salaryMin: 150,
+        salaryMax: 180,
+        salaryUnit: 'DAY',
+        jd: '参与苍穹低代码表单、流程、权限模型配置与客户需求梳理。',
+        skillRequirements: ['低代码平台', '流程建模', '业务分析'],
+        majorRequirements: ['软件工程', '信息管理'],
+        applicationDeadline: '2026-10-31',
+        headcount: 4,
+        publishStatus: 'PUBLISHED',
         matchScore: 82,
         dimensions: [78, 80, 86, 88, 84, 76],
         reason: '苍穹低代码项目经历与平台配置意识加分，适合参与表单、流程和权限模型落地。',
@@ -168,11 +315,22 @@ export const jobPostings = [
     {
         key: 'five',
         jobId: 'JOB-DEMO-JAVA-005',
+        companyId: companies[4].companyId,
         title: 'Java 后端开发实习生',
-        companyName: '示例软件 E',
+        companyName: companies[4].companyName,
+        jobType: 'INTERNSHIP',
         city: '苏州',
         compensation: '170-220 元/天',
         attendance: 'Java 17',
+        salaryMin: 170,
+        salaryMax: 220,
+        salaryUnit: 'DAY',
+        jd: '参与 Java 服务开发、接口设计、事务处理和自动化测试。',
+        skillRequirements: ['Java 17', 'Spring Boot', 'JUnit', 'SQL'],
+        majorRequirements: ['软件工程', '计算机科学与技术'],
+        applicationDeadline: '2026-11-15',
+        headcount: 3,
+        publishStatus: 'PUBLISHED',
         matchScore: 76,
         dimensions: [70, 74, 72, 82, 78, 62],
         reason: '具备 TypeScript 与部分 Java 基础，在 AI 网关或匹配服务方向仍有成长空间。',
@@ -206,6 +364,176 @@ export const resumeDiagnosis = {
         { suggestionId: 'SUG-DEMO-003', field: 'skills', action: 'ALIGN_JD_KEYWORDS', status: 'PENDING' }
     ]
 };
+
+export const resumeRecords = [
+    {
+        resumeId: 'RESUME-DEMO-001',
+        studentId: studentProfile.studentId,
+        versionNo: 3,
+        versionName: '前端开发简历 V3',
+        targetJobId: jobPostings[0].jobId,
+        summary: '软件工程专业学生，具备 KWC、JavaScript、TypeScript 与数据可视化项目经验。',
+        skillTags: ['KWC', 'JavaScript', 'TypeScript', '数据可视化'],
+        status: 'ACTIVE',
+        diagnosisStatus: 'SUCCEEDED',
+        diagnosisReportId: resumeDiagnosis.reportId,
+        diagnosisScore: resumeDiagnosis.score,
+        isDefault: true,
+        createdAt: '2026-07-18T20:00:00+08:00'
+    },
+    {
+        resumeId: 'RESUME-DEMO-002',
+        studentId: studentProfile.studentId,
+        versionNo: 2,
+        versionName: '通用求职简历 V2',
+        targetJobId: null,
+        summary: '保留课程项目、竞赛与通用技能的基础版本。',
+        skillTags: ['JavaScript', 'Java', 'SQL'],
+        status: 'ARCHIVED',
+        diagnosisStatus: 'NOT_RUN',
+        diagnosisReportId: null,
+        diagnosisScore: null,
+        isDefault: false,
+        createdAt: '2026-06-28T09:00:00+08:00'
+    }
+];
+
+export const jobApplications = [
+    {
+        applicationId: 'JOB-APP-DEMO-001',
+        studentId: studentProfile.studentId,
+        studentUserId: studentProfile.studentUserId,
+        jobId: jobPostings[0].jobId,
+        companyId: jobPostings[0].companyId,
+        resumeId: resumeRecords[0].resumeId,
+        source: 'RECOMMENDATION',
+        status: 'SUBMITTED',
+        currentNode: 'COUNSELOR_REVIEW',
+        currentHandlerRole: 'COUNSELOR',
+        currentHandlerId: studentProfile.counselorUserId,
+        submittedAt: '2026-07-19T11:00:00+08:00',
+        updatedAt: '2026-07-19T11:00:00+08:00',
+        approvalRecords: [
+            {
+                recordId: 'APPROVAL-DEMO-JOB-001',
+                commandId: 'CMD-DEMO-JOB-SUBMIT-001',
+                nodeCode: 'DRAFT',
+                actorRole: 'STUDENT',
+                actorId: studentProfile.studentUserId,
+                action: 'SUBMIT',
+                opinion: '申请岗位并提交默认简历。',
+                fromStatus: 'DRAFT',
+                toStatus: 'SUBMITTED',
+                operatedAt: '2026-07-19T11:00:00+08:00'
+            }
+        ]
+    },
+    {
+        applicationId: 'JOB-APP-DEMO-002',
+        studentId: studentProfile.studentId,
+        studentUserId: studentProfile.studentUserId,
+        jobId: jobPostings[1].jobId,
+        companyId: jobPostings[1].companyId,
+        resumeId: resumeRecords[0].resumeId,
+        source: 'RECOMMENDATION',
+        status: 'OFFERED',
+        currentNode: 'OFFERED',
+        currentHandlerRole: null,
+        currentHandlerId: null,
+        latestOpinion: '企业发出演示录用意向。',
+        submittedAt: '2026-07-15T10:00:00+08:00',
+        completedAt: '2026-07-18T16:00:00+08:00',
+        updatedAt: '2026-07-18T16:00:00+08:00',
+        approvalRecords: [
+            {
+                recordId: 'APPROVAL-DEMO-JOB-002-1',
+                commandId: 'CMD-DEMO-JOB-SUBMIT-002',
+                nodeCode: 'DRAFT',
+                actorRole: 'STUDENT',
+                actorId: studentProfile.studentUserId,
+                action: 'SUBMIT',
+                opinion: '提交岗位申请。',
+                fromStatus: 'DRAFT',
+                toStatus: 'SUBMITTED',
+                operatedAt: '2026-07-15T10:00:00+08:00'
+            },
+            {
+                recordId: 'APPROVAL-DEMO-JOB-002-2',
+                commandId: 'CMD-DEMO-JOB-COUNSELOR-002',
+                nodeCode: 'SUBMITTED',
+                actorRole: 'COUNSELOR',
+                actorId: studentProfile.counselorUserId,
+                action: 'COUNSELOR_APPROVE',
+                opinion: '材料完整，同意企业筛选。',
+                fromStatus: 'SUBMITTED',
+                toStatus: 'COMPANY_REVIEW',
+                operatedAt: '2026-07-16T09:00:00+08:00'
+            },
+            {
+                recordId: 'APPROVAL-DEMO-JOB-002-3',
+                commandId: 'CMD-DEMO-JOB-OFFER-002',
+                nodeCode: 'COMPANY_REVIEW',
+                actorRole: 'COMPANY_HR',
+                actorId: companies[1].hrOwnerUserId,
+                action: 'OFFER',
+                opinion: '企业发出演示录用意向。',
+                fromStatus: 'COMPANY_REVIEW',
+                toStatus: 'OFFERED',
+                operatedAt: '2026-07-18T16:00:00+08:00'
+            }
+        ]
+    }
+];
+
+export const internshipApplications = [
+    {
+        internshipApplicationId: 'INTERN-APP-DEMO-001',
+        jobApplicationId: jobApplications[1].applicationId,
+        studentId: studentProfile.studentId,
+        studentUserId: studentProfile.studentUserId,
+        jobId: jobPostings[1].jobId,
+        companyId: jobPostings[1].companyId,
+        resumeId: resumeRecords[0].resumeId,
+        internshipStartDate: '2026-09-01',
+        internshipEndDate: '2027-01-31',
+        weeklyAttendanceDays: 3,
+        workCity: jobPostings[1].city,
+        safetyCommitmentAccepted: true,
+        status: 'DEPARTMENT_REVIEW',
+        currentNode: 'DEPARTMENT_REVIEW',
+        currentHandlerRole: 'DEPARTMENT_ADMIN',
+        currentHandlerId: 'USER-DEMO-DEPARTMENT-ADMIN-001',
+        latestOpinion: '材料完整，同意提交院系复核。',
+        submittedAt: '2026-07-19T12:00:00+08:00',
+        updatedAt: '2026-07-19T13:00:00+08:00',
+        approvalRecords: [
+            {
+                recordId: 'APPROVAL-DEMO-INTERN-001',
+                commandId: 'CMD-DEMO-INTERN-SUBMIT-001',
+                nodeCode: 'DRAFT',
+                actorRole: 'STUDENT',
+                actorId: studentProfile.studentUserId,
+                action: 'SUBMIT',
+                opinion: '提交实习申请。',
+                fromStatus: 'DRAFT',
+                toStatus: 'COUNSELOR_REVIEW',
+                operatedAt: '2026-07-19T12:00:00+08:00'
+            },
+            {
+                recordId: 'APPROVAL-DEMO-INTERN-002',
+                commandId: 'CMD-DEMO-INTERN-COUNSELOR-001',
+                nodeCode: 'COUNSELOR_REVIEW',
+                actorRole: 'COUNSELOR',
+                actorId: studentProfile.counselorUserId,
+                action: 'APPROVE',
+                opinion: '材料完整，同意提交院系复核。',
+                fromStatus: 'COUNSELOR_REVIEW',
+                toStatus: 'DEPARTMENT_REVIEW',
+                operatedAt: '2026-07-19T13:00:00+08:00'
+            }
+        ]
+    }
+];
 
 export const interviewSession = {
     sessionId: 'INTERVIEW-DEMO-001',
@@ -379,25 +707,37 @@ export const demoStory = [
 ];
 
 export const mockDataContract = {
-    contractVersion: 'm1.0',
+    contractVersion: 'm2.0',
     privacyLevel: 'ANONYMOUS_DEMO_ONLY',
-    generatedAt: '2026-07-19T10:00:00+08:00',
+    generatedAt: '2026-07-19T14:00:00+08:00',
     dtoReferences: {
         studentProfile: 'StudentProfileDTO',
+        company: 'CompanyDTO',
         jobPosting: 'JobPostingDTO',
+        resumeRecord: 'ResumeDTO',
         resumeDiagnosis: 'ResumeDiagnosisReportDTO',
+        jobApplication: 'JobApplicationDTO',
+        internshipApplication: 'InternshipApplicationDTO',
         interviewSession: 'InterviewSessionDTO',
         interviewReport: 'InterviewReportDTO',
         dashboardSnapshot: 'EmploymentDashboardDTO',
         policyAnswer: 'PolicyAnswerDTO'
     },
     formReferences: {
-        student: '学生档案 / 成长任务表单',
-        resume: '简历版本 / 诊断报告表单',
-        jobs: '岗位库 / 岗位申请表单',
+        student: 'fit_student_profile',
+        resume: 'fit_resume',
+        company: 'fit_company',
+        jobs: 'fit_job',
+        jobApplication: 'fit_job_application',
+        internshipApplication: 'fit_internship_application',
         interview: '面试场次 / 面试报告表单',
         dashboard: '就业指标快照 / 风险跟进表单',
-        policy: '政策知识条目 / 问答记录表单'
+        policy: 'fit_policy',
+        aiCallLog: 'fit_ai_call_log'
+    },
+    workflowReferences: {
+        jobApplication: 'fit_job_application_flow',
+        internshipApplication: 'fit_internship_approval'
     }
 };
 
