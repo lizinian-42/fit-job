@@ -1,0 +1,12 @@
+{
+  "name": "fit-job-cangqiong-blueprint",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Executable form, permission and workflow blueprint for Fit Job on Kingdee AI Cangqiong",
+  "scripts": {
+    "docs": "node scripts/generate-docs.mjs",
+    "test": "node scripts/validate-config.mjs",
+    "check": "npm run docs && node scripts/validate-config.mjs"
+  }
+}

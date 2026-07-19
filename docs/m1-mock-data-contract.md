@@ -1,4 +1,4 @@
-# M1 Mock 数据契约
+# M1/M2 Mock 数据契约
 
 第一阶段演示数据集中定义在 `platform/kwc/fit-job-kwc/app/kwc/demoData.js`。所有记录均为匿名、虚构数据，不连接真实学生、企业或政务系统。
 
@@ -6,13 +6,18 @@
 
 | 数据集 | 主要用途 | Java DTO 参考 | 苍穹模型参考 |
 | --- | --- | --- | --- |
-| `studentProfile` | 学生画像、求职准备度、任务与成长阶段 | `StudentProfileDTO` | 学生档案、成长任务 |
-| `companies` | 匿名企业主体、行业、规模与审核状态 | `CompanyDTO` | 企业档案 |
-| `jobPostings` | 岗位池、六维匹配、短板与行动建议 | `JobPostingDTO` | 岗位库、岗位申请 |
-| `resumeRecords` | 简历版本、目标岗位、默认版本与诊断状态 | `ResumeDTO` | 简历版本 |
+| `studentProfile` | 学生画像、求职准备度、教育、证书、经历与求职意向 | `StudentProfileDTO` | `fit_student_profile` |
+| `companies` | 匿名企业主体、行业、规模与审核状态 | `CompanyDTO` | `fit_company` |
+| `jobPostings` | 岗位字段、六维匹配、短板与行动建议 | `JobPostingDTO` | `fit_job` |
+| `resumeRecords` | 简历版本、目标岗位、默认版本与诊断状态 | `ResumeDTO` | `fit_resume` |
 | `resumeDiagnosis` | 关键词覆盖、结构诊断与改写建议 | `ResumeDiagnosisReportDTO` | 简历版本、诊断报告 |
-| `jobApplications` | 岗位投递、当前节点与审批轨迹 | `JobApplicationDTO` | 岗位申请、审批记录 |
-| `internshipApplications` | 实习周期、安全承诺与院系审批流程 | `InternshipApplicationDTO` | 实习申请、审批记录 |
+| `jobApplications` | 岗位投递、当前节点与审批轨迹 | `JobApplicationDTO` | `fit_job_application` |
+| `internshipApplications` | 实习周期、安全承诺与四节点审批流程 | `InternshipApplicationDTO` | `fit_internship_application` |
+| `internshipLogs` | 日志工时、内容、总结与风险标记 | `InternshipLogDTO` | `fit_internship_log` |
+| `tripartiteReviews` | 学生、企业、辅导员三方评价 | `TripartiteReviewDTO` | `fit_tripartite_review` |
+| `employmentDestinations` | 就业去向、行业、城市与核验状态 | `EmploymentDestinationDTO` | `fit_employment_destination` |
+| `policyEntries` | 可追溯的模拟政策正文与有效期 | `PolicyDTO` | `fit_policy` |
+| `aiCallLogs` | 脱敏请求摘要、结果、耗时与审计链路 | `AiCallLogDTO` | `fit_ai_call_log` |
 | `interviewSession` | 面试类型、多轮问题、示例回答与四维报告 | `InterviewSessionDTO`、`InterviewReportDTO` | 面试场次、面试报告 |
 | `dashboardSnapshot` | 就业指标、趋势、行业、薪资与风险学生 | `EmploymentDashboardDTO` | 指标快照、风险跟进 |
 | `policyQaCases` | RAG 问答、答案与 `referenceInfos` | `PolicyAnswerDTO` | 政策知识条目、问答记录 |
@@ -45,3 +50,12 @@ npm run test
 ```
 
 校验脚本会检查路由覆盖、企业/岗位/简历/申请之间的引用关系、六维匹配结构、面试报告维度、政策来源和常见个人信息格式。
+
+M2 苍穹模型、权限与流程还需执行：
+
+```bash
+cd platform/cangqiong
+npm run check
+```
+
+该命令会校验 11 个表单模型、四角色权限、岗位字段完整性、一键申请幂等性、处理人分配、退回意见以及“学生 → 辅导员 → 院系 → 企业”的实习审批主链。

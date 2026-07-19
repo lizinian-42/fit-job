@@ -199,6 +199,13 @@ npm run dev
 npm run check
 ```
 
+苍穹 M2 模型、权限、流程与 Mock 一致性检查：
+
+```bash
+cd platform/cangqiong
+npm run check
+```
+
 GitHub Pages 静态预览构建：
 
 ```bash
@@ -210,6 +217,9 @@ npm run build:preview
 - [M1 阶段总结](docs/m1-stage-summary.md)
 - [M1 Mock 数据契约](docs/m1-mock-data-contract.md)
 - [M2 苍穹与 AI 能力对接指南](docs/m2-integration-guide.md)
+- [苍穹表单模型设计](docs/cangqiong-form-models.md)
+- [四类角色权限矩阵](docs/cangqiong-permission-matrix.md)
+- [岗位申请与实习审批流程](docs/cangqiong-application-workflows.md)
 
 ## 许可证
 

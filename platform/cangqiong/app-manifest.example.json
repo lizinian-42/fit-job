@@ -1,0 +1,27 @@
+{
+  "applicationCode": "fitjob",
+  "applicationName": "Fit Job AI 就业实习云平台",
+  "environment": "<development-environment-code>",
+  "platformVersion": "<target-cangqiong-version>",
+  "tenantAlias": "<non-sensitive-alias>",
+  "models": {
+    "studentProfile": "fit_student_profile",
+    "resume": "fit_resume",
+    "company": "fit_company",
+    "job": "fit_job",
+    "jobApplication": "fit_job_application",
+    "internshipApplication": "fit_internship_application",
+    "internshipLog": "fit_internship_log",
+    "tripartiteReview": "fit_tripartite_review",
+    "employmentDestination": "fit_employment_destination",
+    "policy": "fit_policy",
+    "aiCallLog": "fit_ai_call_log"
+  },
+  "workflows": {
+    "companyReview": "fit_company_review",
+    "jobPublishReview": "fit_job_publish_review",
+    "jobApplication": "fit_job_application_flow",
+    "internshipApproval": "fit_internship_approval"
+  },
+  "permissionModel": "fitjob-role-permission-matrix"
+}
