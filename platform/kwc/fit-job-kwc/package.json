@@ -10,8 +10,8 @@
     "dev": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",
     "server": "node server.js",
     "debug": "cross-env NODE_ENV=production DEBUG_BUILD=true node scripts/buildFrontend.js --watch",
-    "lint": "eslint app/kwc/main.js app/kwc/studentWorkbench/*.js app/kwc/resumeDiagnosis/*.js",
-    "lint:fix": "eslint app/kwc/main.js app/kwc/studentWorkbench/*.js app/kwc/resumeDiagnosis/*.js --fix"
+    "lint": "eslint app/kwc/main.js app/kwc/studentWorkbench/*.js app/kwc/resumeDiagnosis/*.js app/kwc/jobRecommendation/*.js app/kwc/policyQa/*.js",
+    "lint:fix": "eslint app/kwc/main.js app/kwc/studentWorkbench/*.js app/kwc/resumeDiagnosis/*.js app/kwc/jobRecommendation/*.js app/kwc/policyQa/*.js --fix"
   },
   "dependencies": {
     "@kdcloudjs/kwc": "1.0.0",

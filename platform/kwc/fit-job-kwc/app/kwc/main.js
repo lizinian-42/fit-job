@@ -3,6 +3,8 @@ import { createElement } from '@kdcloudjs/kwc';
 import { setBasePath } from '@kdcloudjs/shoelace/dist/utilities/base-path.js';
 import studentWorkbench from './studentWorkbench/studentWorkbench.js';
 import resumeDiagnosis from './resumeDiagnosis/resumeDiagnosis.js';
+import jobRecommendation from './jobRecommendation/jobRecommendation.js';
+import policyQa from './policyQa/policyQa.js';
 
 setBasePath('/');
 
@@ -11,13 +13,35 @@ let currentElement;
 function mountPage(page) {
     currentElement?.remove();
 
-    const isResumePage = page === 'resume';
+    const pageConfig = getPageConfig(page);
     currentElement = createElement(
-        isResumePage ? 'kwc-resume-diagnosis' : 'kwc-student-workbench',
-        { is: isResumePage ? resumeDiagnosis : studentWorkbench }
+        pageConfig.tagName,
+        { is: pageConfig.component }
     );
     document.body.appendChild(currentElement);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getPageConfig(page) {
+    const configs = {
+        resume: {
+            tagName: 'kwc-resume-diagnosis',
+            component: resumeDiagnosis
+        },
+        jobs: {
+            tagName: 'kwc-job-recommendation',
+            component: jobRecommendation
+        },
+        policy: {
+            tagName: 'kwc-policy-qa',
+            component: policyQa
+        }
+    };
+
+    return configs[page] || {
+        tagName: 'kwc-student-workbench',
+        component: studentWorkbench
+    };
 }
 
 window.addEventListener('fitjob:navigate', (event) => {

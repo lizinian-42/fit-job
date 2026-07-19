@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Page>
+    <name>policyQaPage</name>
+    <masterLabel>就业政策 RAG 问答</masterLabel>
+    <template>oneregion</template>
+    <isv></isv>
+    <app>fitjob</app>
+    <version>1</version>
+    <regions>
+        <region>
+            <name>region1</name>
+            <controls>
+                <control>
+                    <type>policyQa</type>
+                    <name>policyQaMain</name>
+                </control>
+            </controls>
+        </region>
+    </regions>
+</Page>

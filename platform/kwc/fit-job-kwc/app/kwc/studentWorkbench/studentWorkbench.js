@@ -61,7 +61,19 @@ export default class StudentWorkbench extends KingdeeElement {
   }
 
   openJobRecommendation() {
-      this.showNotice('岗位推荐模块已加入演示故事线，当前展示 2 个高匹配岗位。');
+      if (this.isLocalPreview()) {
+          this.navigateLocal('jobs');
+          return;
+      }
+
+      showForm(
+          {
+              formId: 'jobRecommendationPage',
+              parentPageId: '',
+              params: { openStyle: { showType: 10 } }
+          },
+          { version: 'v1', isv: '', app: 'fitjob' }
+      );
   }
 
   openInterviewTraining() {
@@ -73,15 +85,27 @@ export default class StudentWorkbench extends KingdeeElement {
   }
 
   openPolicyQa() {
-      this.showNotice('政策问答入口已准备，后续通过 RAG 服务模型提供带来源回答。');
+      if (this.isLocalPreview()) {
+          this.navigateLocal('policy');
+          return;
+      }
+
+      showForm(
+          {
+              formId: 'policyQaPage',
+              parentPageId: '',
+              params: { openStyle: { showType: 10 } }
+          },
+          { version: 'v1', isv: '', app: 'fitjob' }
+      );
   }
 
   openFirstJob() {
-      this.showNotice('已打开「云途科技 · 前端开发实习生」岗位详情。');
+      this.openJobRecommendation();
   }
 
   openSecondJob() {
-      this.showNotice('已打开「星环智能 · AI 产品实习生」岗位详情。');
+      this.openJobRecommendation();
   }
 
   closeNotice() {

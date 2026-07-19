@@ -1,5 +1,6 @@
 import { execSync } from 'child_process';
-import { existsSync } from 'fs';
+import { existsSync, readdirSync, statSync } from 'fs';
+import { join } from 'path';
 import minimist from 'minimist';
 import pc from 'picocolors';
 
@@ -13,9 +14,27 @@ const env = process.env.npm_config_env || process.env.npm_config_target_env || a
 
 const controllerDir = 'app/ks/controller';
 
+function hasControllerSources(dir) {
+    return readdirSync(dir).some((item) => {
+        const fullPath = join(dir, item);
+        const stat = statSync(fullPath);
+
+        if (stat.isDirectory()) {
+            return hasControllerSources(fullPath);
+        }
+
+        return stat.isFile() && !item.startsWith('.');
+    });
+}
+
 // 检查 controller 目录是否存在
 if (!existsSync(controllerDir)) {
     console.log(pc.dim('No controller directory found, skipping controller build.'));
+    process.exit(0);
+}
+
+if (!hasControllerSources(controllerDir)) {
+    console.log(pc.dim('No controller source files found, skipping controller build.'));
     process.exit(0);
 }
 

@@ -148,6 +148,38 @@ export default class ResumeDiagnosis extends KingdeeElement {
       );
   }
 
+  openJobRecommendation() {
+      if (this.isLocalPreview()) {
+          window.dispatchEvent(new CustomEvent('fitjob:navigate', { detail: { page: 'jobs' } }));
+          return;
+      }
+
+      showForm(
+          {
+              formId: 'jobRecommendationPage',
+              parentPageId: '',
+              params: { openStyle: { showType: 10 } }
+          },
+          { version: 'v1', isv: '', app: 'fitjob' }
+      );
+  }
+
+  openPolicyQa() {
+      if (this.isLocalPreview()) {
+          window.dispatchEvent(new CustomEvent('fitjob:navigate', { detail: { page: 'policy' } }));
+          return;
+      }
+
+      showForm(
+          {
+              formId: 'policyQaPage',
+              parentPageId: '',
+              params: { openStyle: { showType: 10 } }
+          },
+          { version: 'v1', isv: '', app: 'fitjob' }
+      );
+  }
+
   getSuggestionClass(status) {
       if (status === 'accepted') {
           return 'suggestion suggestion--accepted';
