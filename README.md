@@ -3,6 +3,12 @@
 > 面向中国软件杯赛题的大学生就业实习全链路智能服务系统。  
 > 第一阶段先交付可运行的高质量 Web 原型，后续接入金蝶 AI 苍穹低代码平台、Java 插件、Agent 智能体、RAG 知识库与就业数据驾驶舱。
 
+## 在线预览
+
+[https://lizinian-42.github.io/fit-job/](https://lizinian-42.github.io/fit-job/)
+
+预览版本由 `.github/workflows/deploy-preview.yml` 构建并发布，使用匿名 Mock 数据，不连接真实业务系统。
+
 ## 项目定位
 
 Fit Job 是一个面向高校学生、辅导员、企业 HR 与院系管理员的就业实习智能服务系统，围绕“求职准备、岗位匹配、实习申请、过程管理、就业分析、政策触达”形成完整业务闭环。
@@ -29,18 +35,15 @@ Fit Job 是一个面向高校学生、辅导员、企业 HR 与院系管理员�
 
 项目采用“Web 原型先行、苍穹平台落地、Java 能力增强”的技术路线。
 
-### 第一阶段：React Web 原型
+### 第一阶段：KWC Web 原型
 
 用于快速验证信息架构、视觉风格、核心交互和演示故事线。
 
-- React 18
-- TypeScript
-- Vite
-- Tailwind CSS
-- shadcn/ui 或 Radix UI
-- Framer Motion
-- Recharts / ECharts
-- Mock Service Worker 或本地 JSON mock
+- 金蝶 KWC 组件与苍穹页面元数据
+- JavaScript、HTML、CSS
+- Rollup 构建
+- 本地匿名 Mock 数据契约
+- GitHub Pages 静态预览
 
 第一阶段目标是交付一个可运行的 Web 原型，覆盖：
 
@@ -127,13 +130,13 @@ flowchart LR
 
 ## 三阶段计划
 
-### M1：高质量 React Web 原型
+### M1：高质量 KWC Web 原型
 
 目标：完成可运行、清爽、高级、要素明确的 Web 原型，为后续苍穹页面和答辩演示提供视觉基准。
 
 关键交付：
 
-- React/Vite 项目骨架
+- KWC 项目骨架与苍穹页面元数据
 - 产品首页和核心业务页面
 - Mock 数据与图表
 - 统一设计系统
@@ -182,15 +185,31 @@ flowchart LR
 - `priority:p1`
 - `priority:p2`
 
-## 本地启动计划
-
-第一阶段 Web 原型完成后，预期启动方式如下：
+## 本地启动与构建
 
 ```bash
-cd web
-npm install
+cd platform/kwc/fit-job-kwc
+npm ci
 npm run dev
 ```
+
+完整检查与苍穹组件构建：
+
+```bash
+npm run check
+```
+
+GitHub Pages 静态预览构建：
+
+```bash
+npm run build:preview
+```
+
+## 阶段文档
+
+- [M1 阶段总结](docs/m1-stage-summary.md)
+- [M1 Mock 数据契约](docs/m1-mock-data-contract.md)
+- [M2 苍穹与 AI 能力对接指南](docs/m2-integration-guide.md)
 
 ## 许可证
 
