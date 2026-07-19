@@ -182,14 +182,28 @@ flowchart LR
 - `priority:p1`
 - `priority:p2`
 
-## 本地启动计划
+## 本地开发
 
-第一阶段 Web 原型完成后，预期启动方式如下：
+第一阶段 React Web 原型位于 `web/`。环境要求、依赖说明、目录约定和故障排查请阅读 [本地开发环境说明](docs/local-development.md)。
 
-```bash
+首次启动：
+
+```powershell
+nvm install 24.14.0
+nvm use 24.14.0
+.\scripts\check-environment.ps1
 cd web
-npm install
+npm ci
 npm run dev
+```
+
+未安装 nvm 时，可按 [本地开发环境说明](docs/local-development.md) 使用项目级便携运行时。
+
+提交代码前运行：
+
+```powershell
+cd web
+npm run check
 ```
 
 ## 许可证
