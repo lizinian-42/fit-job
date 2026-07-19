@@ -707,9 +707,9 @@ export const demoStory = [
 ];
 
 export const mockDataContract = {
-    contractVersion: 'm2.0',
+    contractVersion: 'm1.1',
     privacyLevel: 'ANONYMOUS_DEMO_ONLY',
-    generatedAt: '2026-07-19T14:00:00+08:00',
+    generatedAt: '2026-07-19T19:00:00+08:00',
     dtoReferences: {
         studentProfile: 'StudentProfileDTO',
         company: 'CompanyDTO',
@@ -724,20 +724,15 @@ export const mockDataContract = {
         policyAnswer: 'PolicyAnswerDTO'
     },
     formReferences: {
-        student: 'fit_student_profile',
-        resume: 'fit_resume',
-        company: 'fit_company',
-        jobs: 'fit_job',
-        jobApplication: 'fit_job_application',
-        internshipApplication: 'fit_internship_application',
+        student: '学生档案 / 成长任务表单',
+        resume: '简历版本 / 诊断报告表单',
+        company: '企业档案表单',
+        jobs: '岗位库表单',
+        jobApplication: '岗位申请 / 审批记录表单',
+        internshipApplication: '实习申请 / 审批记录表单',
         interview: '面试场次 / 面试报告表单',
         dashboard: '就业指标快照 / 风险跟进表单',
-        policy: 'fit_policy',
-        aiCallLog: 'fit_ai_call_log'
-    },
-    workflowReferences: {
-        jobApplication: 'fit_job_application_flow',
-        internshipApplication: 'fit_internship_approval'
+        policy: '政策知识条目 / 问答记录表单'
     }
 };
 
